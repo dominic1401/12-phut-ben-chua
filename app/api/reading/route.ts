@@ -44,20 +44,47 @@ function htmlToText(html: string) {
     .trim();
 }
 
-function parseLiturgicalDay(decoded: string) {
-  const match = decoded.match(
+function parseLiturgicalDay(raw: string, decoded: string) {
+  const renderedMatch = raw.match(
+    /<div\b[^>]*class=(["'])[^"']*\bday-name\b[^"']*\1[^>]*>([\s\S]*?)<\/div>/i,
+  );
+  if (renderedMatch) {
+    const renderedDay = htmlToText(renderedMatch[2]).replace(/\s+/g, " ").trim();
+    if (renderedDay) return renderedDay;
+  }
+
+  const flightMatch = decoded.match(
     /"className":"day-name[^"]*","children":\[([^\]]+)\]/,
   );
-  if (!match) return "Phụng vụ Lời Chúa hôm nay";
+  if (!flightMatch) return "Phụng vụ Lời Chúa hôm nay";
 
-  return Array.from(match[1].matchAll(/"([^"]*)"|(\d+)/g))
+  return Array.from(flightMatch[1].matchAll(/"([^"]*)"|(\d+)/g))
     .map((part) => part[1] ?? part[2] ?? "")
     .join("")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-function parseGospel(decoded: string) {
+function parseRenderedGospel(raw: string) {
+  const heading = raw.match(
+    /<p\b[^>]*class=(["'])[^"']*\bfont-semibold\b[^"']*\1[^>]*>\s*Tin Mừng[\s\S]*?<span\b[^>]*>([\s\S]*?)<\/span>[\s\S]*?<\/p>/i,
+  );
+  if (!heading || heading.index === undefined) return null;
+
+  const contentAfterHeading = raw.slice(heading.index + heading[0].length);
+  const gospelHtml = contentAfterHeading.match(
+    /^\s*<hr\b[^>]*\/?\s*>\s*<div\b[^>]*>\s*((?:<p\b[^>]*>[\s\S]*?<\/p>\s*)+)<\/div>/i,
+  )?.[1];
+
+  if (!gospelHtml) return null;
+  const reference = htmlToText(heading[2]);
+  const text = htmlToText(gospelHtml);
+  if (!reference || text.length < 40) return null;
+
+  return { reference, text };
+}
+
+function parseFlightGospel(decoded: string) {
   const gospelStart = decoded.indexOf('"children":["Tin Mừng"');
   if (gospelStart < 0) return null;
 
@@ -85,6 +112,10 @@ function parseGospel(decoded: string) {
   if (text.length < 40) return null;
 
   return { reference, text };
+}
+
+function parseGospel(raw: string, decoded: string) {
+  return parseRenderedGospel(raw) ?? parseFlightGospel(decoded);
 }
 
 function validDatePart(value: string | null, min: number, max: number) {
@@ -124,7 +155,7 @@ export async function GET(request: Request) {
     const response = await fetch(sourceUrl, {
       headers: {
         Accept: "text/html,application/xhtml+xml",
-        "User-Agent": "10-Phut-Ben-Chua/1.0 (+private prayer site)",
+        "User-Agent": "12-Phut-Ben-Chua/1.0 (+private prayer site)",
       },
     });
 
@@ -134,14 +165,14 @@ export async function GET(request: Request) {
 
     const raw = await response.text();
     const decoded = decodeFlightMarkup(raw);
-    const gospel = parseGospel(decoded);
+    const gospel = parseGospel(raw, decoded);
     if (!gospel) throw new Error("The Gospel block could not be parsed");
 
     return Response.json(
       {
         ok: true,
         date: `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`,
-        liturgicalDay: parseLiturgicalDay(decoded),
+        liturgicalDay: parseLiturgicalDay(raw, decoded),
         gospelReference: gospel.reference,
         gospelText: gospel.text,
         sourceName: "Augustinô",

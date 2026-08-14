@@ -517,7 +517,7 @@ export default function Home() {
         <div className="music-heading">
           <div>
             <span>Nhạc nền cầu nguyện</span>
-            <strong>Nhạc Taizé · bản 12 phút</strong>
+            <strong>Nhạc Taizé</strong>
           </div>
           <button
             type="button"
@@ -569,11 +569,11 @@ export default function Home() {
             aria-label="Âm lượng nhạc nền"
           />
         </label>
-        <p className={musicError ? "music-error" : undefined}>
-          {musicError
-            ? "Chưa thể phát nhạc. Hãy chạm Bật nhạc rồi thử lại."
-            : "Tệp nhạc phát trực tiếp, không quảng cáo và không chuyển bài."}
-        </p>
+        {musicError && (
+          <p className="music-error">
+            Chưa thể phát nhạc. Hãy chạm Bật nhạc rồi thử lại.
+          </p>
+        )}
       </aside>
 
       <section className="prayer-stage" id="top" aria-live="polite">
@@ -600,9 +600,6 @@ export default function Home() {
                 <>
                   <blockquote>{dailyPrayer.verse}</blockquote>
                   <cite>{dailyPrayer.shortReference}</cite>
-                  <p className="sync-note">
-                    Chưa thể đồng bộ; đang dùng bài cầu nguyện dự phòng.
-                  </p>
                 </>
               )}
             </div>

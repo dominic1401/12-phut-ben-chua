@@ -769,6 +769,78 @@ a:focus-visible {
   margin-top: 12px;
 }
 
+.meditation-details {
+  margin-top: 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.36);
+  text-align: left;
+}
+
+.meditation-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 16px 20px;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  list-style: none;
+  cursor: pointer;
+}
+
+.meditation-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.meditation-details summary:focus-visible {
+  outline: 2px solid var(--gold-text);
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+
+.meditation-details summary small {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.meditation-chevron {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.meditation-details[open] .meditation-chevron {
+  transform: rotate(225deg);
+}
+
+.meditation-text {
+  padding: 4px 20px 22px;
+  color: var(--ink);
+  font-family: var(--font-prayer);
+  font-size: 19px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.meditation-text p {
+  margin: 0;
+}
+
+.meditation-text p + p {
+  margin-top: 1em;
+}
+
 .reflection-prompt {
   margin: 28px 0 0;
   padding-top: 20px;

@@ -67,3 +67,12 @@ test("saving, reading and clearing work, while denied storage never breaks praye
   assert.doesNotThrow(() => writeSession(blocked, session));
   assert.doesNotThrow(() => clearSession(blocked));
 });
+
+test("optional meditation survives resume; older readings and malformed optional content stay usable", () => {
+  const withMeditation = { ...session, reading: { ...reading, meditationText: "Đoạn một.\n\nĐoạn hai." } };
+  assert.deepEqual(parseSession(JSON.stringify(withMeditation), now), withMeditation);
+  assert.deepEqual(parseReading(reading, session.dateKey), reading);
+  for (const meditationText of [null, 42, "", " ", "x".repeat(60_001)]) {
+    assert.deepEqual(parseReading({ ...reading, meditationText }, session.dateKey), reading);
+  }
+});

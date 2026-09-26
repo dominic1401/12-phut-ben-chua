@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FALLBACK_AUDIO, getVietnamDate, selectDailyAudio } from "@/lib/weekly-audio";
 
 type PrayerStatus = "idle" | "playing" | "paused" | "complete";
 
@@ -274,6 +275,9 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const startedAtRef = useRef(0);
   const elapsedAtStartRef = useRef(0);
+  const sourceRef = useRef<string | null>(null);
+  const pendingSeekRef = useRef(0);
+  const playAttemptRef = useRef(0);
 
   const dailyPrayer = dailyPrayers[dayIndex];
   const stages = useMemo(
@@ -299,21 +303,18 @@ export default function Home() {
 
   useEffect(() => {
     const now = new Date();
-    const formattedDate = new Intl.DateTimeFormat("vi-VN", {
-      weekday: "long",
-      day: "2-digit",
-      month: "2-digit",
-    }).format(now);
+    const vietnamDate = getVietnamDate(now);
+    selectMusicForToday();
     const dateUpdateFrame = window.requestAnimationFrame(() => {
-      setDayIndex(now.getDay());
-      setDateLabel(formattedDate.replace("Chủ Nhật", "Chúa Nhật"));
+      setDayIndex(vietnamDate.weekdayIndex);
+      setDateLabel(vietnamDate.label);
     });
 
     const controller = new AbortController();
     const params = new URLSearchParams({
-      d: String(now.getDate()),
-      m: String(now.getMonth() + 1),
-      y: String(now.getFullYear()),
+      d: vietnamDate.day,
+      m: vietnamDate.month,
+      y: vietnamDate.year,
     });
 
     fetch(`/api/reading?${params.toString()}`, { signal: controller.signal })
@@ -364,33 +365,55 @@ export default function Home() {
     audio.volume = volume;
   }, [volume]);
 
-  const syncMusicTo = (position: number) => {
+  // Keep one media element: source changes occur only before a new session or on failure.
+  const setMusicSource = (source: string) => {
     const audio = audioRef.current;
-    if (!audio) return;
-    const safePosition = Math.min(Math.max(position, 0), totalDuration - 0.1);
-    const seek = () => {
-      if (Math.abs(audio.currentTime - safePosition) > 0.35) {
-        audio.currentTime = safePosition;
-      }
-    };
-
-    if (audio.readyState > 0) seek();
-    else audio.addEventListener("loadedmetadata", seek, { once: true });
+    if (!audio || sourceRef.current === source) return;
+    playAttemptRef.current += 1;
+    sourceRef.current = source;
+    audio.src = source;
+    audio.volume = volume;
+    audio.load();
   };
 
-  const playMusicFrom = (position: number) => {
+  const selectMusicForToday = () => {
+    setMusicSource(selectDailyAudio(
+      new Date(), window.location.search,
+      process.env.NEXT_PUBLIC_AUDIO_PREVIEW === "true",
+    ));
+  };
+
+  const currentPrayerTime = () => status === "playing"
+    ? Math.min(totalDuration, elapsedAtStartRef.current + (Date.now() - startedAtRef.current) / 1000)
+    : elapsed;
+
+  const syncMusicTo = (position: number) => {
     const audio = audioRef.current;
-    if (!audio || !musicEnabled) return;
+    pendingSeekRef.current = Math.min(Math.max(position, 0), totalDuration - 0.1);
+    if (audio && audio.readyState > 0
+      && Math.abs(audio.currentTime - pendingSeekRef.current) > 0.35) {
+      audio.currentTime = pendingSeekRef.current;
+    }
+  };
+
+  const playMusicFrom = (position: number, enabled = musicEnabled) => {
+    const audio = audioRef.current;
+    if (!audio || !enabled) return;
+    const attempt = ++playAttemptRef.current;
     syncMusicTo(position);
     audio.volume = volume;
     setMusicError(false);
-    void audio.play().catch(() => {
+    void audio.play().catch((error: Error) => {
+      // A pause/source change may cancel an older play request. It is not a playback error.
+      if (attempt !== playAttemptRef.current || error.name === "AbortError" || audio.error) return;
       setIsMusicPlaying(false);
       setMusicError(true);
     });
   };
 
   const begin = () => {
+    selectMusicForToday();
+    pendingSeekRef.current = 0;
     setElapsed(0);
     elapsedAtStartRef.current = 0;
     startedAtRef.current = Date.now();
@@ -400,7 +423,10 @@ export default function Home() {
   };
 
   const pause = () => {
-    elapsedAtStartRef.current = elapsed;
+    const position = currentPrayerTime();
+    playAttemptRef.current += 1;
+    setElapsed(position);
+    elapsedAtStartRef.current = position;
     audioRef.current?.pause();
     setStatus("paused");
   };
@@ -413,11 +439,15 @@ export default function Home() {
   };
 
   const restart = () => {
+    playAttemptRef.current += 1;
+    pendingSeekRef.current = 0;
     const audio = audioRef.current;
     audio?.pause();
-    if (audio) audio.currentTime = 0;
+    if (audio && audio.readyState > 0) audio.currentTime = 0;
     setElapsed(0);
     setStatus("idle");
+    setMusicError(false);
+    selectMusicForToday();
     setMusicOpen(true);
   };
 
@@ -425,6 +455,7 @@ export default function Home() {
     const audio = audioRef.current;
 
     if (musicEnabled) {
+      playAttemptRef.current += 1;
       audio?.pause();
       setMusicEnabled(false);
       setMusicError(false);
@@ -434,14 +465,7 @@ export default function Home() {
     setMusicEnabled(true);
     setMusicError(false);
 
-    if (audio && status === "playing") {
-      syncMusicTo(elapsed);
-      audio.volume = volume;
-      void audio.play().catch(() => {
-        setIsMusicPlaying(false);
-        setMusicError(true);
-      });
-    }
+    if (audio && status === "playing") playMusicFrom(currentPrayerTime(), true);
   };
 
   const changeVolume = (nextVolume: number) => {
@@ -472,13 +496,26 @@ export default function Home() {
 
       <audio
         ref={audioRef}
-        src="/taize-prayer-12-min.mp3"
         preload="metadata"
-        onPlay={() => setIsMusicPlaying(true)}
+        onPlaying={() => setIsMusicPlaying(true)}
         onPause={() => setIsMusicPlaying(false)}
-        onCanPlay={() => setMusicError(false)}
+        onEnded={() => setIsMusicPlaying(false)}
+        onLoadedMetadata={() => syncMusicTo(status === "playing" ? currentPrayerTime() : pendingSeekRef.current)}
+        onCanPlay={() => {
+          if (audioRef.current) audioRef.current.volume = volume;
+          if (status === "playing" && musicEnabled && audioRef.current?.paused) {
+            playMusicFrom(currentPrayerTime());
+          }
+        }}
         onError={() => {
           setIsMusicPlaying(false);
+          if (sourceRef.current !== FALLBACK_AUDIO) {
+            syncMusicTo(currentPrayerTime());
+            setMusicSource(FALLBACK_AUDIO);
+            setMusicError(false);
+            if (status === "playing") playMusicFrom(currentPrayerTime());
+            return;
+          }
           setMusicError(true);
         }}
       />

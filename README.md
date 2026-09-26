@@ -28,6 +28,21 @@ Mở `http://localhost:3000`.
 
 ## Lưu ý
 
-- Tệp nhạc nằm tại `public/taize-prayer-12-min.mp3`.
+- Bảy bản nhạc Taizé 12 phút nằm trong `public/audio/` và được chọn cố định theo
+  từng ngày trong tuần, dựa trên múi giờ Việt Nam (`Asia/Ho_Chi_Minh`).
+- Nhạc được chọn lúc mở trang và khi bắt đầu một phiên mới; qua nửa đêm trong
+  lúc cầu nguyện không đổi bài. Chỉ tải bản của ngày được chọn. Nếu lỗi tải,
+  trình phát thử bản dự phòng cũ tại `public/taize-prayer-12-min.mp3` một lần.
+- Trên Vercel Preview hoặc bản phát triển, thêm `?audioDay=monday` (hoặc
+  `sunday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`) để nghe
+  thử từng ngày. Tham số này không thay đổi nhạc trên Production.
+- Bản nhạc xuất ở 128 kbps, 44.1 kHz stereo; âm lượng được cân bằng bằng
+  gain cố định để giữ độ động. Bảy bản phối dùng đủ 19 bài trong tệp nguồn,
+  với ba bài được dùng lại vào ngày khác. Khoảng lặng giữa bài khoảng 1,5–3,6 giây.
+- `docs/weekly-audio.json` ghi mốc cắt, thông số và mã kiểm tra của từng bản.
+  Để dựng lại: `python3 scripts/build-weekly-audio.py /path/to/taize.mp3`
+  (cần FFmpeg). Tệp nguồn đầy đủ không nằm trong repository.
+- Kiểm tra chọn ngày: `node --experimental-strip-types --test tests/weekly-audio.test.mjs`
+  (Node.js 22.6+). Build: `npm run build`.
 - API bài đọc nằm tại `app/api/reading/route.ts`.
-- Khi cập nhật mã nguồn trên GitHub, Netlify sẽ tự triển khai lại.
+- Khi cập nhật mã nguồn trên GitHub, Vercel sẽ tự triển khai lại.

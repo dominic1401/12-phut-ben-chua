@@ -1,0 +1,249 @@
+{
+  "source_sha256": "5f66f506df13a299f0bbcc08238e9fab22a90650a9c6b204f23b3104f82b7819",
+  "sample_rate": 44100,
+  "duration_seconds": 720,
+  "bitrate_kbps": 128,
+  "target_lufs": -20,
+  "source_tracks": [
+    {
+      "track": 1,
+      "start": 1.27465,
+      "end": 202.514,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.4,
+      "gain_db": -1.9
+    },
+    {
+      "track": 2,
+      "start": 214.347,
+      "end": 523.83,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -1.9,
+      "gain_db": -1.9
+    },
+    {
+      "track": 3,
+      "start": 534.794,
+      "end": 742.643,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -3.1,
+      "gain_db": -1.9
+    },
+    {
+      "track": 4,
+      "start": 752.525,
+      "end": 1030.35,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -1.5,
+      "gain_db": -1.9
+    },
+    {
+      "track": 5,
+      "start": 1040.83,
+      "end": 1236.95,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -4.0,
+      "gain_db": -1.9
+    },
+    {
+      "track": 6,
+      "start": 1248.67,
+      "end": 1436.57,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -3.8,
+      "gain_db": -1.9
+    },
+    {
+      "track": 7,
+      "start": 1449.3,
+      "end": 1717.78,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -1.9,
+      "gain_db": -1.9
+    },
+    {
+      "track": 8,
+      "start": 1730.01,
+      "end": 1926.14,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -3.8,
+      "gain_db": -1.9
+    },
+    {
+      "track": 9,
+      "start": 1937.71,
+      "end": 2219.68,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.1,
+      "gain_db": -1.9
+    },
+    {
+      "track": 10,
+      "start": 2233.78,
+      "end": 2409.16,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -3.2,
+      "gain_db": -1.9
+    },
+    {
+      "track": 11,
+      "start": 2421.24,
+      "end": 2664.15,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -3.9,
+      "gain_db": -1.9
+    },
+    {
+      "track": 12,
+      "start": 2676.58,
+      "end": 2949.5,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -1.9,
+      "gain_db": -1.9
+    },
+    {
+      "track": 13,
+      "start": 2960.78,
+      "end": 3141.13,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.6,
+      "gain_db": -1.9
+    },
+    {
+      "track": 14,
+      "start": 3152.03,
+      "end": 3356.86,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -3.1,
+      "gain_db": -1.9
+    },
+    {
+      "track": 15,
+      "start": 3371.33,
+      "end": 3583.37,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.8,
+      "gain_db": -1.9
+    },
+    {
+      "track": 16,
+      "start": 3595.63,
+      "end": 3772.92,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.6,
+      "gain_db": -1.9
+    },
+    {
+      "track": 17,
+      "start": 3785.66,
+      "end": 4005.69,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.4,
+      "gain_db": -1.9
+    },
+    {
+      "track": 18,
+      "start": 4018.9,
+      "end": 4205.75,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -4.0,
+      "gain_db": -1.9
+    },
+    {
+      "track": 19,
+      "start": 4218.26,
+      "end": 4389.22,
+      "input_lufs": -18.1,
+      "input_true_peak_dbfs": -2.3,
+      "gain_db": -1.9
+    }
+  ],
+  "days": [
+    {
+      "day": "sunday",
+      "tracks": [
+        1,
+        2,
+        14
+      ],
+      "pause_seconds": 2.223825,
+      "decoded_samples": 31752000,
+      "bytes": 11521114,
+      "sha256": "64b4382df410cf9d70533995eea18492ec9734647834f648a327876f99beca89"
+    },
+    {
+      "day": "monday",
+      "tracks": [
+        3,
+        8,
+        2
+      ],
+      "pause_seconds": 3.269,
+      "decoded_samples": 31752000,
+      "bytes": 11521114,
+      "sha256": "b9a1a0cc1852a82e7e10ca382877e99d3bb2e1b88542f114bdc820e387506792"
+    },
+    {
+      "day": "tuesday",
+      "tracks": [
+        4,
+        5,
+        11
+      ],
+      "pause_seconds": 1.5725,
+      "decoded_samples": 31752000,
+      "bytes": 11521115,
+      "sha256": "43c3ef5826747a3c9c72b7d7623032d5b277a1ae9a32f6982a2506a4585c033c"
+    },
+    {
+      "day": "wednesday",
+      "tracks": [
+        6,
+        9,
+        11
+      ],
+      "pause_seconds": 3.61,
+      "decoded_samples": 31752000,
+      "bytes": 11521117,
+      "sha256": "f9be5e19449790019abb6ee8e481919ead3e9f0125eb5ea504dc7ca0bdb0f9c8"
+    },
+    {
+      "day": "thursday",
+      "tracks": [
+        7,
+        10,
+        12
+      ],
+      "pause_seconds": 1.61,
+      "decoded_samples": 31752000,
+      "bytes": 11521116,
+      "sha256": "7cdbaa3cb7d40bbfe89e187db97ac0f9d231cf65e1370c43b66bd4f439292720"
+    },
+    {
+      "day": "friday",
+      "tracks": [
+        9,
+        15,
+        17
+      ],
+      "pause_seconds": 2.98,
+      "decoded_samples": 31752000,
+      "bytes": 11521114,
+      "sha256": "f2c01a975670528f22c342a215e89081830dd167e0c7364799c0dff7fa3f1d38"
+    },
+    {
+      "day": "saturday",
+      "tracks": [
+        13,
+        16,
+        18,
+        19
+      ],
+      "pause_seconds": 1.516667,
+      "decoded_samples": 31752000,
+      "bytes": 11521116,
+      "sha256": "495433e3a2735279eeae23935399d0d1334093fe156e99885d32add855d1e0db"
+    }
+  ],
+  "editing": "Complete takes at quiet boundaries; brief pauses, static loudness gain and fades. No speed changes."
+}

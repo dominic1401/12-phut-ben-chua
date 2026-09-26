@@ -6,6 +6,7 @@
   --cream: #f3efe5;
   --paper: rgba(255, 253, 247, 0.76);
   --gold: #b68a45;
+  --gold-text: #80591f;
   --gold-light: #d6bc82;
   --line: rgba(23, 56, 47, 0.14);
   --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
@@ -49,10 +50,9 @@ a:focus-visible {
   min-height: 100svh;
   position: relative;
   isolation: isolate;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x: clip;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   padding: 0 clamp(20px, 4vw, 64px);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.45), transparent 46%),
@@ -233,8 +233,8 @@ a:focus-visible {
 }
 
 .music-heading > div > span {
-  color: var(--gold);
-  font-size: 9px;
+  color: var(--gold-text);
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -246,8 +246,8 @@ a:focus-visible {
 }
 
 .music-heading button {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   margin: -6px -6px 0 0;
   border: 0;
   border-radius: 50%;
@@ -317,7 +317,7 @@ a:focus-visible {
 
 .music-status span {
   color: var(--ink-soft);
-  font-size: 10px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -341,11 +341,12 @@ a:focus-visible {
   align-items: center;
   gap: 12px;
   color: var(--ink-soft);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .volume-control input {
   width: 100%;
+  min-height: 44px;
   margin: 0;
   cursor: pointer;
   accent-color: var(--gold);
@@ -379,7 +380,7 @@ a:focus-visible {
 
 .kicker {
   margin: 0 0 17px;
-  color: var(--gold);
+  color: var(--gold-text);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.21em;
@@ -449,7 +450,7 @@ a:focus-visible {
 .prayer-copy cite {
   display: block;
   margin-top: 12px;
-  color: var(--gold);
+  color: var(--gold-text);
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
@@ -472,11 +473,13 @@ a:focus-visible {
 }
 
 .source-link {
-  display: inline-block;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
   margin-top: 13px;
-  color: var(--gold);
+  color: var(--gold-text);
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 750;
   letter-spacing: 0.04em;
   text-decoration: none;
@@ -544,8 +547,65 @@ a:focus-visible {
 
 .quiet-note {
   margin: 15px 0 0;
-  color: rgba(65, 99, 90, 0.78);
-  font-size: 11px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.intro-actions {
+  margin: 26px auto 0;
+  max-width: 440px;
+}
+
+.resume-card .primary-action {
+  margin-top: 26px;
+}
+
+.resume-card h1 {
+  font-size: clamp(38px, 6.5vw, 72px);
+}
+
+.new-session-action {
+  display: block;
+  min-height: 44px;
+  margin: 12px auto 0;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.reading-notice {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f7f1e4;
+  color: var(--ink);
+  text-align: left;
+  font: 14px/1.6 var(--font-ui);
+}
+
+.reading-notice p { margin: 0; }
+
+.reading-notice button {
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
 }
 
 .session-panel {
@@ -578,7 +638,7 @@ a:focus-visible {
 .step-count {
   grid-column: 1 / -1;
   margin-bottom: 6px;
-  color: var(--gold);
+  color: var(--gold-text);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.17em;
@@ -678,11 +738,8 @@ a:focus-visible {
 
 .reading-text {
   width: 100%;
-  max-height: min(38vh, 330px);
   margin-top: 20px;
   padding: 19px 22px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.36);
@@ -716,8 +773,8 @@ a:focus-visible {
   margin: 28px 0 0;
   padding-top: 20px;
   border-top: 1px solid var(--line);
-  color: var(--gold);
-  font-size: 12px;
+  color: var(--gold-text);
+  font-size: 14px;
   font-weight: 650;
   letter-spacing: 0.025em;
   font-family: var(--font-ui);
@@ -765,7 +822,7 @@ a:focus-visible {
   padding: 10px 0 10px 5px;
   cursor: pointer;
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -884,7 +941,7 @@ a:focus-visible {
 
 .learning-copy em {
   margin-top: 11px;
-  color: var(--gold);
+  color: var(--gold-text);
   font-size: 11px;
   font-style: normal;
   font-weight: 750;
@@ -909,7 +966,7 @@ a:focus-visible {
   justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
-  color: rgba(65, 99, 90, 0.7);
+  color: var(--ink-soft);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 10px;
   letter-spacing: 0.04em;
@@ -946,7 +1003,7 @@ a:focus-visible {
   .prayer-shell {
     min-height: 100dvh;
     padding: 0 14px env(safe-area-inset-bottom);
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr;
   }
 
   .site-header {
@@ -998,7 +1055,7 @@ a:focus-visible {
   }
 
   .music-panel.is-open {
-    max-height: 270px;
+    max-height: 380px;
     margin-top: 8px;
     padding: 14px;
     border-width: 1px;
@@ -1011,7 +1068,8 @@ a:focus-visible {
   }
 
   .prayer-stage {
-    padding: 28px 0 32px;
+    margin: 0 auto;
+    padding: 20px 0 28px;
     align-items: flex-start;
   }
 
@@ -1080,12 +1138,13 @@ a:focus-visible {
   }
 
   .reading-text {
-    max-height: min(40dvh, 330px);
     margin-top: 16px;
-    padding: 15px 16px;
-    border-radius: 14px;
-    font-size: 17px;
-    line-height: 1.66;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 19px;
+    line-height: 1.75;
   }
 
   .session-source {
@@ -1101,6 +1160,7 @@ a:focus-visible {
   .session-controls {
     position: sticky;
     bottom: 0;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
     grid-template-columns: 48px 1fr auto;
     gap: 12px;
     padding-top: 14px;

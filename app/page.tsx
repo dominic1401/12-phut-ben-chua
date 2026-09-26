@@ -1,7 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FALLBACK_AUDIO, getVietnamDate, selectDailyAudio } from "@/lib/weekly-audio";
+import {
+  clearSession, parseReading, readSession, readingParams, readingSource, writeSession,
+  PRAYER_STAGE_DURATIONS as stageTimes, PRAYER_DURATION as totalDuration,
+  type LiturgicalReading, type PrayerSession,
+} from "@/lib/prayer-session";
 
 type PrayerStatus = "idle" | "playing" | "paused" | "complete";
 
@@ -17,16 +22,6 @@ type PrayerStage = {
   prompt?: string;
   reading?: string;
   sourceUrl?: string;
-};
-
-type LiturgicalReading = {
-  ok: true;
-  date: string;
-  liturgicalDay: string;
-  gospelReference: string;
-  gospelText: string;
-  sourceName: string;
-  sourceUrl: string;
 };
 
 type DailyPrayer = {
@@ -162,9 +157,6 @@ const dailyPrayers: DailyPrayer[] = [
   },
 ];
 
-const stageTimes = [60, 210, 135, 105, 135, 75];
-const totalDuration = stageTimes.reduce((total, duration) => total + duration, 0);
-
 function buildStages(
   prayer: DailyPrayer,
   reading: LiturgicalReading | null,
@@ -184,7 +176,7 @@ function buildStages(
       latin: "Lectio",
       duration: stageTimes[1],
       eyebrow: "Lắng nghe Lời Chúa",
-      title: reading ? "Tin Mừng hôm nay" : "Đọc chậm. Đọc lại. Lắng nghe.",
+      title: reading ? "Lắng nghe Tin Mừng" : "Đọc chậm. Đọc lại. Lắng nghe.",
       body: reading
         ? "Hãy đọc thật chậm. Đừng cố đọc cho hết; hãy để một lời dừng bạn lại."
         : "Đừng vội phân tích. Hãy để từng lời ở lại trong lòng và chú ý đến từ ngữ đang chạm đến bạn.",
@@ -258,16 +250,43 @@ function getStageIndex(elapsed: number) {
   return stageTimes.length - 1;
 }
 
+function prayerStorage() {
+  try { return window.localStorage; } catch { return null; }
+}
+
+function vietnamDateKey(now = new Date()) {
+  const date = getVietnamDate(now);
+  return `${date.year}-${date.month}-${date.day}`;
+}
+
+function ReadingNotice({ state, retry }: {
+  state: "loading" | "ready" | "error"; retry: () => void;
+}) {
+  if (state === "ready") return null;
+  return (
+    <div className={`reading-notice ${state === "error" ? "is-fallback" : ""}`}>
+      <p role="status">
+        {state === "loading"
+          ? "Đang tải Tin Mừng. Trong lúc chờ, bạn có thể cầu nguyện với đoạn dự phòng."
+          : "Chưa tải được Tin Mừng của ngày này. Bạn đang dùng đoạn cầu nguyện dự phòng."}
+      </p>
+      {state === "error" && <button type="button" onClick={retry}>Thử tải lại Tin Mừng</button>}
+    </div>
+  );
+}
+
 export default function Home() {
   const [status, setStatus] = useState<PrayerStatus>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [dayIndex, setDayIndex] = useState(0);
   const [dateLabel, setDateLabel] = useState("Hôm nay");
+  const [dateKey, setDateKey] = useState("");
+  const [savedSession, setSavedSession] = useState<PrayerSession | null>(null);
   const [reading, setReading] = useState<LiturgicalReading | null>(null);
   const [readingState, setReadingState] = useState<"loading" | "ready" | "error">(
     "loading",
   );
-  const [musicOpen, setMusicOpen] = useState(true);
+  const [musicOpen, setMusicOpen] = useState(false);
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [musicError, setMusicError] = useState(false);
@@ -278,6 +297,9 @@ export default function Home() {
   const sourceRef = useRef<string | null>(null);
   const pendingSeekRef = useRef(0);
   const playAttemptRef = useRef(0);
+  const readingRequestRef = useRef<{ id: number; controller: AbortController | null }>({ id: 0, controller: null });
+  const snapshotRef = useRef<{ session: PrayerSession; playing: boolean } | null>(null);
+  const restoredScrollRef = useRef<number | null>(null);
 
   const dailyPrayer = dailyPrayers[dayIndex];
   const stages = useMemo(
@@ -288,11 +310,7 @@ export default function Home() {
   const stage = stages[stageIndex];
   const progress = Math.min(1, elapsed / totalDuration);
   const remaining = totalDuration - elapsed;
-  const introTheme = reading
-    ? reading.liturgicalDay
-    : readingState === "loading"
-      ? "Đang chuẩn bị Lời Chúa"
-      : dailyPrayer.theme;
+
 
   const stageProgress = useMemo(() => {
     const stageStart = stages
@@ -301,41 +319,97 @@ export default function Home() {
     return Math.min(1, Math.max(0, (elapsed - stageStart) / stage.duration));
   }, [elapsed, stage.duration, stageIndex, stages]);
 
+  const loadReading = useCallback((key: string) => {
+    readingRequestRef.current.controller?.abort();
+    const id = ++readingRequestRef.current.id;
+    const controller = new AbortController();
+    readingRequestRef.current.controller = controller;
+    setReading(null);
+    setReadingState("loading");
+    const timeout = window.setTimeout(() => controller.abort(), 12_000);
+    void fetch(`/api/reading?${readingParams(key)}`, { signal: controller.signal })
+      .then(async (response) => {
+        const payload = parseReading(await response.json(), key);
+        if (!response.ok || !payload) throw new Error("Reading unavailable");
+        if (id !== readingRequestRef.current.id) return;
+        setReading(payload);
+        setReadingState("ready");
+      })
+      .catch(() => {
+        if (id === readingRequestRef.current.id) setReadingState("error");
+      })
+      .finally(() => window.clearTimeout(timeout));
+  }, []);
+
   useEffect(() => {
     const now = new Date();
     const vietnamDate = getVietnamDate(now);
+    const key = vietnamDateKey(now);
+    setSavedSession(readSession(prayerStorage()));
+    setDateKey(key);
+    setDayIndex(vietnamDate.weekdayIndex);
+    setDateLabel(vietnamDate.label);
     selectMusicForToday();
-    const dateUpdateFrame = window.requestAnimationFrame(() => {
-      setDayIndex(vietnamDate.weekdayIndex);
-      setDateLabel(vietnamDate.label);
-    });
-
-    const controller = new AbortController();
-    const params = new URLSearchParams({
-      d: vietnamDate.day,
-      m: vietnamDate.month,
-      y: vietnamDate.year,
-    });
-
-    fetch(`/api/reading?${params.toString()}`, { signal: controller.signal })
-      .then(async (response) => {
-        const payload = await response.json();
-        if (!response.ok || !payload.ok) {
-          throw new Error(payload.error ?? "Reading sync failed");
-        }
-        setReading(payload as LiturgicalReading);
-        setReadingState("ready");
-      })
-      .catch((error: Error) => {
-        if (error.name === "AbortError") return;
-        setReadingState("error");
-      });
-
+    loadReading(key);
     return () => {
-      window.cancelAnimationFrame(dateUpdateFrame);
-      controller.abort();
+      readingRequestRef.current.id += 1;
+      readingRequestRef.current.controller?.abort();
     };
+  }, [loadReading]);
+
+  const persistCurrentSession = useCallback(() => {
+    const snapshot = snapshotRef.current;
+    if (!snapshot) return;
+    const position = snapshot.playing
+      ? elapsedAtStartRef.current + (Date.now() - startedAtRef.current) / 1000
+      : snapshot.session.elapsed;
+    if (position >= totalDuration) { clearSession(prayerStorage()); return; }
+    writeSession(prayerStorage(), {
+      ...snapshot.session, elapsed: Math.max(0, position), savedAt: Date.now(),
+      audioSource: sourceRef.current ?? snapshot.session.audioSource,
+      scrollY: window.scrollY,
+    });
   }, []);
+
+  useEffect(() => {
+    if ((status === "playing" || status === "paused") && dateKey) {
+      snapshotRef.current = {
+        playing: status === "playing",
+        session: {
+          version: 1, savedAt: Date.now(), dateKey, elapsed,
+          audioSource: sourceRef.current ?? FALLBACK_AUDIO,
+          musicEnabled, volume, reading, scrollY: window.scrollY,
+        },
+      };
+    } else {
+      snapshotRef.current = null;
+      if (status === "complete") clearSession(prayerStorage());
+    }
+  }, [status, dateKey, elapsed, musicEnabled, volume, reading]);
+
+  useEffect(() => {
+    if (status === "playing" || status === "paused") persistCurrentSession();
+  }, [status, stageIndex, reading, musicEnabled, volume, persistCurrentSession]);
+
+  useEffect(() => {
+    const timer = window.setInterval(persistCurrentSession, 5000);
+    const onHidden = () => { if (document.visibilityState === "hidden") persistCurrentSession(); };
+    window.addEventListener("pagehide", persistCurrentSession);
+    document.addEventListener("visibilitychange", onHidden);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("pagehide", persistCurrentSession);
+      document.removeEventListener("visibilitychange", onHidden);
+    };
+  }, [persistCurrentSession]);
+
+  useEffect(() => {
+    if (status === "idle" || status === "complete") return;
+    const scrollY = restoredScrollRef.current ?? 0;
+    restoredScrollRef.current = null;
+    const frame = window.requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: "instant" }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [status === "idle", stageIndex]);
 
   useEffect(() => {
     if (status !== "playing") return;
@@ -396,12 +470,12 @@ export default function Home() {
     }
   };
 
-  const playMusicFrom = (position: number, enabled = musicEnabled) => {
+  const playMusicFrom = (position: number, enabled = musicEnabled, level = volume) => {
     const audio = audioRef.current;
     if (!audio || !enabled) return;
     const attempt = ++playAttemptRef.current;
     syncMusicTo(position);
-    audio.volume = volume;
+    audio.volume = level;
     setMusicError(false);
     void audio.play().catch((error: Error) => {
       // A pause/source change may cancel an older play request. It is not a playback error.
@@ -412,6 +486,17 @@ export default function Home() {
   };
 
   const begin = () => {
+    clearSession(prayerStorage());
+    setSavedSession(null);
+    const now = new Date();
+    const todayKey = vietnamDateKey(now);
+    if (dateKey !== todayKey) {
+      const today = getVietnamDate(now);
+      setDateKey(todayKey);
+      setDayIndex(today.weekdayIndex);
+      setDateLabel(today.label);
+      loadReading(todayKey);
+    }
     selectMusicForToday();
     pendingSeekRef.current = 0;
     setElapsed(0);
@@ -419,6 +504,32 @@ export default function Home() {
     startedAtRef.current = Date.now();
     playMusicFrom(0);
     setMusicOpen(false);
+    setStatus("playing");
+  };
+
+  const restoreSession = () => {
+    if (!savedSession) return;
+    const saved = savedSession;
+    readingRequestRef.current.id += 1;
+    readingRequestRef.current.controller?.abort();
+    const date = getVietnamDate(new Date(`${saved.dateKey}T12:00:00+07:00`));
+    setDateKey(saved.dateKey);
+    setDateLabel(date.label);
+    setDayIndex(date.weekdayIndex);
+    setReading(saved.reading);
+    setReadingState(saved.reading ? "ready" : "error");
+    setElapsed(saved.elapsed);
+    setMusicEnabled(saved.musicEnabled);
+    setVolume(saved.volume);
+    setMusicOpen(false);
+    setMusicError(false);
+    setSavedSession(null);
+    restoredScrollRef.current = saved.scrollY;
+    elapsedAtStartRef.current = saved.elapsed;
+    startedAtRef.current = Date.now();
+    setMusicSource(saved.audioSource);
+    syncMusicTo(saved.elapsed);
+    playMusicFrom(saved.elapsed, saved.musicEnabled, saved.volume);
     setStatus("playing");
   };
 
@@ -439,6 +550,8 @@ export default function Home() {
   };
 
   const restart = () => {
+    clearSession(prayerStorage());
+    setSavedSession(null);
     playAttemptRef.current += 1;
     pendingSeekRef.current = 0;
     const audio = audioRef.current;
@@ -448,7 +561,13 @@ export default function Home() {
     setStatus("idle");
     setMusicError(false);
     selectMusicForToday();
-    setMusicOpen(true);
+    setMusicOpen(false);
+    const today = getVietnamDate(new Date());
+    const key = vietnamDateKey();
+    setDateKey(key);
+    setDateLabel(today.label);
+    setDayIndex(today.weekdayIndex);
+    loadReading(key);
   };
 
   const toggleMusic = () => {
@@ -613,41 +732,64 @@ export default function Home() {
         )}
       </aside>
 
-      <section className="prayer-stage" id="top" aria-live="polite">
+      <section className="prayer-stage" id="top">
         {status === "idle" ? (
           <div className="intro-panel">
-            <p className="kicker">{dateLabel} · {introTheme}</p>
-            <h1>Cho tâm hồn một khoảng lặng.</h1>
-            <p className="intro-copy">
-              Mười hai phút. Một đoạn Lời Chúa. Một cuộc gặp gỡ thật riêng với Người.
-            </p>
+            {savedSession ? (
+              <div className="resume-card">
+                <p className="kicker">Giờ cầu nguyện đang dở</p>
+                <h1>Tiếp tục khoảng lặng.</h1>
+                <p className="intro-copy">
+                  Phiên ngày {savedSession.dateKey.split("-").reverse().join("/")}
+                  {" · "}Nhịp {getStageIndex(savedSession.elapsed) + 1}/6
+                  {" · "}Còn {formatTime(totalDuration - savedSession.elapsed)}
+                </p>
+                <button className="primary-action" type="button" onClick={restoreSession}>
+                  <span className="play-icon" aria-hidden="true" />
+                  Tiếp tục phiên đang dở
+                </button>
+                <button className="new-session-action" type="button" onClick={begin}>
+                  Bắt đầu phiên mới hôm nay
+                </button>
+                <p className="quiet-note">Nhạc chỉ phát khi bạn chọn tiếp tục.</p>
+              </div>
+            ) : (
+              <>
+                <p className="kicker">{dateLabel}</p>
+                <h1>Cho tâm hồn một khoảng lặng.</h1>
+                <p className="intro-copy">
+                  Mười hai phút. Một đoạn Lời Chúa. Một cuộc gặp gỡ thật riêng với Người.
+                </p>
+                <div className="intro-actions">
+                  <button className="primary-action" type="button" onClick={begin}>
+                    <span className="play-icon" aria-hidden="true" />
+                    Bắt đầu 12 phút
+                  </button>
+                  <p className="quiet-note">Nhạc Taizé phát cùng giờ cầu nguyện. Bạn có thể tắt nhạc ở nút phía trên.</p>
+                </div>
+              </>
+            )}
 
             <div className="verse-preview">
-              <span>Lời Chúa để cầu nguyện hôm nay</span>
+              <span>{readingState === "error" ? "Đoạn cầu nguyện dự phòng" : "Tin Mừng hôm nay"}</span>
               {readingState === "loading" ? (
-                <p className="reading-loading">Đang đồng bộ bài đọc phụng vụ…</p>
+                <p className="reading-loading" role="status">Đang tải Tin Mừng…</p>
               ) : reading ? (
                 <>
                   <blockquote className="liturgical-title">
                     {reading.liturgicalDay}
                   </blockquote>
                   <cite>Tin Mừng · {reading.gospelReference}</cite>
+                  <a className="source-link" href={reading.sourceUrl} target="_blank" rel="noreferrer">Nguồn bài đọc: {reading.sourceName} ↗</a>
                 </>
               ) : (
                 <>
                   <blockquote>{dailyPrayer.verse}</blockquote>
                   <cite>{dailyPrayer.shortReference}</cite>
+                  <ReadingNotice state={readingState} retry={() => loadReading(dateKey || vietnamDateKey())} />
                 </>
               )}
             </div>
-
-            <button className="primary-action" type="button" onClick={begin}>
-              <span className="play-icon" aria-hidden="true" />
-              Bắt đầu 12 phút
-            </button>
-            <p className="quiet-note">
-              Nhạc Taizé sẽ tự phát và dừng cùng giờ cầu nguyện · Đeo tai nghe nếu có thể
-            </p>
           </div>
         ) : status === "complete" ? (
           <div className="complete-panel">
@@ -694,7 +836,7 @@ export default function Home() {
           <div className="session-panel">
             <div className="session-topline">
               <div>
-                <span className="step-count">Nhịp {stageIndex + 1} / {stages.length}</span>
+                <span className="step-count" aria-live="polite">Nhịp {stageIndex + 1} / {stages.length}</span>
                 <strong>{stage.name}</strong>
                 <em>{stage.latin}</em>
               </div>
@@ -715,19 +857,24 @@ export default function Home() {
               <h2>{stage.title}</h2>
               {stage.verse && <blockquote>{stage.verse}</blockquote>}
               {stage.reference && <cite>{stage.reference}</cite>}
+              {stageIndex === 1 && <ReadingNotice state={readingState} retry={() => loadReading(dateKey || vietnamDateKey())} />}
               <p className={`body-copy ${stage.reading ? "reading-instruction" : ""}`}>
                 {stage.body}
               </p>
               {stage.reading && (
                 <div
                   className="reading-text"
-                  tabIndex={0}
                   aria-label={`Bản văn ${stage.reference}`}
                 >
                   {stage.reading.split(/\n{2,}/).map((paragraph) => (
                     <p key={paragraph.slice(0, 80)}>{paragraph}</p>
                   ))}
                 </div>
+              )}
+              {stage.reading && reading && (
+                <a className="source-link session-source" href={reading.sourceUrl} target="_blank" rel="noreferrer">
+                  {reading.sourceName} · {reading.date} ↗
+                </a>
               )}
               {stage.prompt && <p className="reflection-prompt">{stage.prompt}</p>}
             </article>

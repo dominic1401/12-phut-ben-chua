@@ -2,6 +2,23 @@ export const SESSION_KEY = "12-phut-ben-chua:session:v1";
 export const SESSION_LIFETIME = 7 * 24 * 60 * 60 * 1000;
 export const PRAYER_STAGE_DURATIONS = [60, 210, 135, 105, 135, 75];
 export const PRAYER_DURATION = PRAYER_STAGE_DURATIONS.reduce((sum, time) => sum + time, 0);
+export type PaceMode = "auto" | "manual";
+
+export function getStageIndex(elapsed: number) {
+  let boundary = 0;
+  for (let index = 0; index < PRAYER_STAGE_DURATIONS.length; index += 1) {
+    boundary += PRAYER_STAGE_DURATIONS[index];
+    if (elapsed < boundary) return index;
+  }
+  return PRAYER_STAGE_DURATIONS.length - 1;
+}
+
+export function prayerPosition(start: number, seconds: number, pace: PaceMode = "auto") {
+  const end = pace === "manual"
+    ? PRAYER_STAGE_DURATIONS.slice(0, getStageIndex(start) + 1).reduce((a, b) => a + b, 0) - 0.001
+    : PRAYER_DURATION;
+  return Math.min(end, Math.max(0, start + Math.max(0, seconds)));
+}
 
 export type LiturgicalReading = {
   ok: true;
@@ -24,6 +41,7 @@ export type PrayerSession = {
   volume: number;
   reading: LiturgicalReading | null;
   scrollY: number;
+  paceMode?: PaceMode;
 };
 
 type SessionStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -84,6 +102,7 @@ export function parseSession(raw: string | null, now = Date.now()): PrayerSessio
       version: 1, savedAt: s.savedAt, dateKey: s.dateKey, elapsed: s.elapsed,
       audioSource: s.audioSource, musicEnabled: s.musicEnabled, volume: s.volume,
       reading, scrollY: Number.isFinite(s.scrollY) ? Math.max(0, Math.min(s.scrollY, 100_000)) : 0,
+      ...(s.paceMode === "auto" || s.paceMode === "manual" ? { paceMode: s.paceMode } : {}),
     };
   } catch {
     return null;
@@ -103,4 +122,24 @@ export function writeSession(storage: SessionStorage | null, session: PrayerSess
 export function clearSession(storage: SessionStorage | null) {
   try { storage?.removeItem(SESSION_KEY); }
   catch { /* Storage access is optional. */ }
+}
+
+const READING_CACHE_KEY = "12-phut-ben-chua:readings:v1";
+
+export function readCachedReading(storage: SessionStorage | null, dateKey: string) {
+  try {
+    const cached = JSON.parse(storage?.getItem(READING_CACHE_KEY) ?? "{}");
+    return parseReading(cached[dateKey], dateKey);
+  } catch { return null; }
+}
+
+export function cacheReading(storage: SessionStorage | null, dateKey: string, reading: LiturgicalReading) {
+  if (!parseReading(reading, dateKey)) return;
+  try {
+    let cached: Record<string, unknown> = {};
+    try { cached = JSON.parse(storage?.getItem(READING_CACHE_KEY) ?? "{}"); } catch { /* Replace corrupt data. */ }
+    const entries = Object.entries(cached ?? {}).filter(([key, value]) => parseReading(value, key));
+    const next = Object.fromEntries([...entries.filter(([key]) => key !== dateKey), [dateKey, reading]].slice(-7));
+    storage?.setItem(READING_CACHE_KEY, JSON.stringify(next));
+  } catch { /* Reading remains available if storage is denied. */ }
 }

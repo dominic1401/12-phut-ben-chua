@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
+import { brandIconUrl } from "./lib/brand.mjs";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [{ source: "/favicon.svg", destination: brandIconUrl(64), permanent: false }];
+  },
   async headers() {
     return [{ source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }] }];
   },

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { brandIconUrl } from "@/lib/brand.mjs";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -8,9 +9,9 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#f3efe5", theme_color: "#17382f",
     icons: [
       ...[192, 512].map(size => ({
-        src: `/api/app-icon?size=${size}`, sizes: `${size}x${size}`, type: "image/png", purpose: "any" as const,
+        src: brandIconUrl(size), sizes: `${size}x${size}`, type: "image/png", purpose: "any" as const,
       })),
-      { src: "/api/app-icon?size=512", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: brandIconUrl(512), sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

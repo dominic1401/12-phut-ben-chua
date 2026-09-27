@@ -5,6 +5,7 @@ import vm from "node:vm";
 import { prayerPosition, getStageIndex, PRAYER_STAGE_DURATIONS, cacheReading, readCachedReading, parseSession } from "../lib/prayer-session.ts";
 import { parsePreferences, DEFAULT_PREFERENCES } from "../lib/prayer-preferences.ts";
 import { prepareOffline, OFFLINE_CACHE } from "../lib/prayer-offline.ts";
+import { BRAND_OFFLINE_ASSETS, brandIconUrl } from "../lib/brand.mjs";
 
 const now = Date.parse("2026-09-27T12:00:00+07:00");
 const reading = {
@@ -126,7 +127,7 @@ test("offline preparation commits the page only after all assets and the complet
     failAsset = false;
     await prepareOffline("/audio/taize-sunday.mp3");
     assert.equal(await entries.get("/").clone().text(), page);
-    for (const asset of ["/_next/static/app.js", "/_next/static/style.css", "/_next/static/media/prayer.woff2", "/audio/taize-sunday.mp3", "/manifest.webmanifest"]) assert.ok(entries.has(asset));
+    for (const asset of [...BRAND_OFFLINE_ASSETS, "/_next/static/app.js", "/_next/static/style.css", "/_next/static/media/prayer.woff2", "/audio/taize-sunday.mp3", "/manifest.webmanifest"]) assert.ok(entries.has(asset));
     await assert.rejects(prepareOffline("https://other.test/audio.mp3"), /Nhạc/);
   } finally {
     for (const key of globals) {
@@ -134,4 +135,13 @@ test("offline preparation commits the page only after all assets and the complet
       else delete globalThis[key];
     }
   }
+});
+
+test("offline icons use the versioned approved logo instead of a cached previous icon", async () => {
+  const { events, entries } = worker();
+  entries.set("/api/app-icon?size=192", new Response("old cross"));
+  entries.set(brandIconUrl(192), new Response("approved Chi-Rho clock"));
+  let response;
+  events.fetch({ request: new Request(`https://prayer.test${brandIconUrl(192)}`), respondWith: value => response = value });
+  assert.equal(await (await response).text(), "approved Chi-Rho clock");
 });

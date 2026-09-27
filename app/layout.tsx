@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { brandIconUrl } from "@/lib/brand.mjs";
 import "./globals.css";
 import "./ux.css";
 
@@ -22,7 +23,10 @@ export const metadata: Metadata = {
     "codex-preview": "development",
   },
   appleWebApp: { capable: true, title: "Bên Chúa", statusBarStyle: "default" },
-  icons: { icon: "/favicon.svg", apple: "/api/app-icon?size=180" },
+  icons: {
+    icon: [32, 64].map(size => ({ url: brandIconUrl(size), sizes: `${size}x${size}`, type: "image/png" })),
+    apple: { url: brandIconUrl(180), sizes: "180x180", type: "image/png" },
+  },
 };
 
 export const viewport: Viewport = {

@@ -110,35 +110,6 @@ a:focus-visible {
   font-family: var(--font-ui);
 }
 
-.cross-mark {
-  width: 24px;
-  height: 30px;
-  position: relative;
-  display: inline-block;
-}
-
-.cross-mark::before,
-.cross-mark::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  border-radius: 2px;
-  background: var(--gold);
-  transform: translate(-50%, -50%);
-}
-
-.cross-mark::before {
-  width: 2px;
-  height: 27px;
-}
-
-.cross-mark::after {
-  width: 16px;
-  height: 2px;
-  top: 39%;
-}
-
 .sound-button {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -905,38 +876,6 @@ a:focus-visible {
 .text-control:disabled {
   cursor: default;
   opacity: 0.35;
-}
-
-.complete-symbol {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 27px;
-  position: relative;
-  border: 1px solid rgba(182, 138, 69, 0.5);
-  border-radius: 50%;
-}
-
-.complete-symbol::before,
-.complete-symbol::after,
-.complete-symbol span::before,
-.complete-symbol span::after {
-  content: "";
-  position: absolute;
-  background: var(--gold);
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.complete-symbol::before {
-  width: 1px;
-  height: 36px;
-}
-
-.complete-symbol::after {
-  width: 22px;
-  height: 1px;
-  top: 42%;
 }
 
 .learning-card {

@@ -1,3 +1,5 @@
+import { BRAND_OFFLINE_ASSETS } from "./brand.mjs";
+
 export const OFFLINE_CACHE = "12phut-offline-v1";
 
 export async function prepareOffline(audioSource: string) {
@@ -19,9 +21,7 @@ export async function prepareOffline(audioSource: string) {
     .filter(url => url.startsWith("/_next/static/")));
   if (!assets.size) throw new Error("Chưa lưu được trang để dùng khi không có mạng. Vui lòng thử lại.");
   assets.add("/manifest.webmanifest");
-  assets.add("/favicon.svg");
-  assets.add("/api/app-icon?size=192");
-  assets.add("/api/app-icon?size=512");
+  for (const url of BRAND_OFFLINE_ASSETS) assets.add(url);
   assets.add(audioSource);
   await Promise.all(Array.from(assets, async url => {
     if (url !== "/manifest.webmanifest" && await cache.match(url)) return;

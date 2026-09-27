@@ -1,11 +1,13 @@
 "use client";
 
+import { BrandMark } from "./brand-mark";
+
 export function PrayerCompletion({ onQuiet, onRestart }: {
   onQuiet: () => void; onRestart: () => void;
 }) {
   return (
     <div className="complete-panel">
-      <div className="complete-symbol" aria-hidden="true"><span /></div>
+      <div className="completion-brand"><BrandMark large /></div>
       <p className="kicker">Tạ ơn Chúa</p>
       <h1>Xin Chúa ban bình an.</h1>
       <p className="intro-copy">Giờ cầu nguyện đã kết thúc. Hãy giữ Lời Chúa trong lòng và đem ra thực hành.</p>

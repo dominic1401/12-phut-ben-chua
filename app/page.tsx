@@ -14,6 +14,7 @@ import { PaceSelector, DisplayOptions } from "./prayer-options";
 import { PrayerCompletion } from "./prayer-completion";
 import { OfflineOptions } from "./prayer-offline";
 import { MusicIcon } from "./music-icon";
+import { BrandMark } from "./brand-mark";
 
 type PrayerStatus = "idle" | "playing" | "paused" | "complete" | "quiet";
 
@@ -729,8 +730,8 @@ export default function Home() {
 
       <header className="site-header">
         <a className="wordmark" href="#top" aria-label="12 Phút Bên Chúa">
-          <span className="cross-mark" aria-hidden="true" />
-          <span>12 Phút Bên Chúa</span>
+          <BrandMark />
+          <span className="brand-name"><span>12 Phút</span>{" "}<span>Bên Chúa</span></span>
         </a>
         <button
           className="sound-button"

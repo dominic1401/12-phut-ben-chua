@@ -780,7 +780,6 @@ export default function Home() {
                     {reading.liturgicalDay}
                   </blockquote>
                   <cite>Tin Mừng · {reading.gospelReference}</cite>
-                  <a className="source-link" href={reading.sourceUrl} target="_blank" rel="noreferrer">Nguồn bài đọc: {reading.sourceName} ↗</a>
                 </>
               ) : (
                 <>
@@ -877,6 +876,19 @@ export default function Home() {
                 </a>
               )}
               {stage.prompt && <p className="reflection-prompt">{stage.prompt}</p>}
+              {stageIndex === 2 && reading?.meditationText && (
+                <details className="meditation-details">
+                  <summary>
+                    <span>Đọc bài suy niệm <small>Tùy chọn</small></span>
+                    <span className="meditation-chevron" aria-hidden="true" />
+                  </summary>
+                  <div className="meditation-text">
+                    {reading.meditationText.split(/\n{2,}/).map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </div>
+                </details>
+              )}
             </article>
 
             <div className="session-controls">

@@ -9,6 +9,7 @@ export type LiturgicalReading = {
   liturgicalDay: string;
   gospelReference: string;
   gospelText: string;
+  meditationText?: string;
   sourceName: string;
   sourceUrl: string;
 };
@@ -56,6 +57,9 @@ export function parseReading(value: unknown, dateKey: string): LiturgicalReading
     liturgicalDay: r.liturgicalDay as string,
     gospelReference: r.gospelReference as string,
     gospelText: r.gospelText as string,
+    ...(typeof r.meditationText === "string" && r.meditationText.trim()
+      && r.meditationText.length <= 60_000
+      ? { meditationText: r.meditationText.trim() } : {}),
     sourceName: r.sourceName as string,
     // Derive this URL instead of trusting a link stored in the browser.
     sourceUrl: readingSource(dateKey),

@@ -76,3 +76,15 @@ test("optional meditation survives resume; older readings and malformed optional
     assert.deepEqual(parseReading({ ...reading, meditationText }, session.dateKey), reading);
   }
 });
+
+test("Vietnamese reading text normalizes combining accents without adding spaces", () => {
+  const sample = "Giờ cầu nguyện. Lời Chúa vẫn tiếp tục trong ngày sống.";
+  const parsed = parseReading({ ...reading, liturgicalDay: sample.normalize("NFD"),
+    gospelReference: "Mát-thêu".normalize("NFD"), gospelText: sample.normalize("NFD"),
+    meditationText: sample.normalize("NFD"),
+  }, session.dateKey);
+  assert.equal(parsed.liturgicalDay, sample);
+  assert.equal(parsed.gospelReference, "Mát-thêu");
+  assert.equal(parsed.gospelText, sample);
+  assert.equal(parsed.meditationText, sample);
+});

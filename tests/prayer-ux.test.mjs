@@ -105,7 +105,7 @@ test("offline preparation commits the page only after all assets and the complet
   const before = Object.fromEntries(globals.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
   const entries = new Map();
   let failAsset = false;
-  const page = '<html><link href="/_next/static/style.css"/><script src="/_next/static/app.js"></script></html>';
+  const page = '<html><link href="/_next/static/style.css"/><link rel="preload" as="font" href="/_next/static/media/prayer.woff2"/><script src="/_next/static/app.js"></script></html>';
   const replacements = {
     navigator: { serviceWorker: { register: async () => {}, ready: Promise.resolve({}) } },
     window: { isSecureContext: true, caches: {}, setTimeout, clearTimeout },
@@ -126,7 +126,7 @@ test("offline preparation commits the page only after all assets and the complet
     failAsset = false;
     await prepareOffline("/audio/taize-sunday.mp3");
     assert.equal(await entries.get("/").clone().text(), page);
-    for (const asset of ["/_next/static/app.js", "/_next/static/style.css", "/audio/taize-sunday.mp3", "/manifest.webmanifest"]) assert.ok(entries.has(asset));
+    for (const asset of ["/_next/static/app.js", "/_next/static/style.css", "/_next/static/media/prayer.woff2", "/audio/taize-sunday.mp3", "/manifest.webmanifest"]) assert.ok(entries.has(asset));
     await assert.rejects(prepareOffline("https://other.test/audio.mp3"), /Nhạc/);
   } finally {
     for (const key of globals) {

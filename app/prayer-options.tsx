@@ -7,12 +7,12 @@ export function PaceSelector({ value, onChange }: {
 }) {
   return (
     <fieldset className="preference-group pace-selector">
-      <legend>Cách chuyển nhịp</legend>
+      <legend>Cách chuyển bước</legend>
       <div className="choice-row">
         <button type="button" aria-pressed={value === "auto"} onClick={() => onChange("auto")}>Tự động · 12 phút</button>
-        <button type="button" aria-pressed={value === "manual"} onClick={() => onChange("manual")}>Theo nhịp riêng</button>
+        <button type="button" aria-pressed={value === "manual"} onClick={() => onChange("manual")}>Tôi tự chuyển</button>
       </div>
-      <p>{value === "auto" ? "Tự chuyển qua 6 nhịp trong 12 phút." : "Chạm Nhịp tiếp khi sẵn sàng. Thời gian chỉ là gợi ý."}</p>
+      <p>{value === "auto" ? "Tự động chuyển qua sáu bước trong 12 phút." : "Chọn Bước tiếp khi bạn đã sẵn sàng. Thời gian chỉ để tham khảo."}</p>
     </fieldset>
   );
 }
@@ -27,7 +27,7 @@ export function DisplayOptions({ theme, fontSize, onTheme, onFontSize }: {
       <fieldset className="preference-group">
         <legend>Giao diện</legend>
         <div className="choice-row">
-          {([["system", "Thiết bị"], ["light", "Sáng"], ["dark", "Tối"]] as const).map(([value, label]) => (
+          {([["system", "Theo máy"], ["light", "Sáng"], ["dark", "Tối"]] as const).map(([value, label]) => (
             <button key={value} type="button" aria-pressed={theme === value} onClick={() => onTheme(value)}>{label}</button>
           ))}
         </div>

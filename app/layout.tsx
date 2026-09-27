@@ -1,11 +1,23 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./ux.css";
+
+const prayerFont = localFont({
+  src: "../public/fonts/NotoSerif-Vietnamese.woff2",
+  variable: "--font-prayer-face", weight: "400 800", style: "normal",
+  display: "swap", preload: true, adjustFontFallback: false,
+});
+const interfaceFont = localFont({
+  src: "../public/fonts/NotoSans-Vietnamese.woff2",
+  variable: "--font-ui-face", weight: "400 800", style: "normal",
+  display: "swap", preload: true, adjustFontFallback: false,
+});
 
 export const metadata: Metadata = {
   title: "12 Phút Bên Chúa",
   description:
-    "Một khoảng lặng 12 phút mỗi ngày để cầu nguyện với Lời Chúa theo phương pháp Lectio Divina.",
+    "Dành 12 phút mỗi ngày để lắng nghe Lời Chúa, suy niệm và cầu nguyện theo phương pháp Lectio Divina.",
   other: {
     "codex-preview": "development",
   },
@@ -24,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="vi" className={`${prayerFont.variable} ${interfaceFont.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var p=JSON.parse(localStorage.getItem('12-phut-ben-chua:preferences:v1')||'{}');document.documentElement.dataset.theme=p.theme==='dark'||(p.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(['normal','large','largest'].includes(p.fontSize))document.documentElement.dataset.fontSize=p.fontSize;}catch(e){}})();` }} />
       </head>

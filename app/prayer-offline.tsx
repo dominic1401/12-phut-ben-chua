@@ -47,7 +47,7 @@ export function OfflineOptions({ dateKey, readingReady, audioSource }: {
     if ("caches" in window && readingReady) {
       void caches.open(OFFLINE_CACHE).then(async cache => {
         const [page, audio] = await Promise.all([cache.match("/"), cache.match(audioSource)]);
-        if (active && page && audio && readCachedReading(localStorage, dateKey)) setMessage(`Đã có trang và nhạc trên thiết bị. Bài đọc ngày ${dateKey.split("-").reverse().join("/")} đã sẵn sàng.`);
+        if (active && page && audio && readCachedReading(localStorage, dateKey)) setMessage(`Đã lưu trang và nhạc trên thiết bị. Tin Mừng ngày ${dateKey.split("-").reverse().join("/")} đã sẵn sàng.`);
       }).catch(() => {});
     }
     return () => { active = false; };
@@ -69,9 +69,9 @@ export function OfflineOptions({ dateKey, readingReady, audioSource }: {
     setSaving(true);
     setMessage("Đang lưu trang và nhạc. Vui lòng giữ trang mở…");
     try {
-      if (!readCachedReading(localStorage, dateKey)) throw new Error("Chưa lưu được bài đọc trên thiết bị này. Hãy cho phép lưu dữ liệu trang rồi thử lại.");
+      if (!readCachedReading(localStorage, dateKey)) throw new Error("Chưa lưu được Tin Mừng trên thiết bị này. Hãy kiểm tra quyền lưu dữ liệu của trình duyệt rồi thử lại.");
       await prepareOffline(audioSource);
-      setMessage(`Đã lưu để cầu nguyện ngoại tuyến ngày ${dateKey.split("-").reverse().join("/")}.`);
+      setMessage(`Đã lưu để cầu nguyện khi không có mạng, ngày ${dateKey.split("-").reverse().join("/")}.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Chưa lưu được. Vui lòng thử lại khi có mạng.");
     } finally { setSaving(false); }
@@ -81,7 +81,7 @@ export function OfflineOptions({ dateKey, readingReady, audioSource }: {
     <div className="offline-options">
       <details>
         <summary>Dùng khi mất mạng</summary>
-        <p>Lưu trang, bài đọc và nhạc của phiên này. Nhạc khoảng 12 MB. Ngày mới cần mở trang khi có mạng để lấy bài đọc mới.</p>
+        <p>Lưu trang, Tin Mừng và nhạc của ngày đang chọn. Tệp nhạc khoảng 12 MB. Mỗi ngày, hãy mở trang khi có mạng để tải Tin Mừng mới.</p>
         <button className="settings-action" type="button" disabled={saving || !readingReady} onClick={save}>
           {saving ? "Đang lưu…" : "Lưu để dùng khi mất mạng"}
         </button>

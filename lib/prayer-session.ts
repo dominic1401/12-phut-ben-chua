@@ -72,12 +72,12 @@ export function parseReading(value: unknown, dateKey: string): LiturgicalReading
   }
   return {
     ok: true, date: r.date as string,
-    liturgicalDay: r.liturgicalDay as string,
-    gospelReference: r.gospelReference as string,
-    gospelText: r.gospelText as string,
+    liturgicalDay: (r.liturgicalDay as string).normalize("NFC"),
+    gospelReference: (r.gospelReference as string).normalize("NFC"),
+    gospelText: (r.gospelText as string).normalize("NFC"),
     ...(typeof r.meditationText === "string" && r.meditationText.trim()
       && r.meditationText.length <= 60_000
-      ? { meditationText: r.meditationText.trim() } : {}),
+      ? { meditationText: r.meditationText.trim().normalize("NFC") } : {}),
     sourceName: r.sourceName as string,
     // Derive this URL instead of trusting a link stored in the browser.
     sourceUrl: readingSource(dateKey),

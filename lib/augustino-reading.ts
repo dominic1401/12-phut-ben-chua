@@ -40,7 +40,7 @@ function htmlToText(html: string) {
     .replace(/[ \t]+/g, " ")
     .replace(/ *\n */g, "\n")
     .replace(/\n{3,}/g, "\n\n")
-    .trim();
+    .trim().normalize("NFC");
 }
 
 function parseLiturgicalDay(raw: string, decoded: string) {

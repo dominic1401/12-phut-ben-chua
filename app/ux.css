@@ -120,23 +120,6 @@ button:disabled { cursor: default; opacity: 0.45; }
 .dock-settings { font-size: 16px; }
 .dock-button[aria-pressed="false"] { opacity: 0.55; }
 .dock-button .play-icon { margin-left: 3px; }
-.intention-card { max-width: 560px; margin: 28px auto; text-align: left; }
-.intention-card label { display: block; margin-bottom: 10px; font-size: 16px; font-weight: 650; }
-.intention-card textarea {
-  display: block;
-  width: 100%;
-  min-height: 120px;
-  resize: vertical;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface-soft);
-  color: var(--ink);
-  font: 18px/1.7 var(--font-prayer);
-}
-.intention-card textarea::placeholder { color: var(--ink-soft); }
-.intention-card textarea:focus-visible { outline: 2px solid var(--gold-text); outline-offset: 3px; }
-.intention-card p { margin: 8px 0 0; min-height: 20px; font-size: 13px; color: var(--ink-soft); }
 .complete-panel .new-session-action { display: block; margin: 14px auto 0; }
 .after-prayer { max-width: 560px; margin: 30px auto 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--ink-soft); }
 .after-prayer p { margin: 6px 0; font-size: 15px; line-height: 1.7; }
@@ -153,10 +136,24 @@ button:disabled { cursor: default; opacity: 0.45; }
   .session-topline em { display: none; }
   .session-time time { font-size: 29px; }
   .meditation-details summary, .meditation-text { padding-left: 16px; padding-right: 16px; }
-  .intention-card label { line-height: 1.5; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Keep Vietnamese accents and word spacing consistent across platforms. */
+body { font-kerning: normal; }
+.intro-panel h1, .complete-panel h1, .prayer-copy h2, .quiet-panel h1 {
+  letter-spacing: normal;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.intro-copy, .prayer-copy blockquote, .body-copy, .reading-text, .meditation-text {
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+.kicker, .verse-preview > span, .step-count, .wordmark { letter-spacing: 0.04em; }
+.complete-panel .primary-action { margin-top: 28px; }
+.music-note { display: inline-flex; align-items: center; justify-content: center; }

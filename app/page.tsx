@@ -13,6 +13,7 @@ import { DEFAULT_PREFERENCES, PREFERENCES_KEY, parsePreferences, type Preference
 import { PaceSelector, DisplayOptions } from "./prayer-options";
 import { PrayerCompletion } from "./prayer-completion";
 import { OfflineOptions } from "./prayer-offline";
+import { MusicIcon } from "./music-icon";
 
 type PrayerStatus = "idle" | "playing" | "paused" | "complete" | "quiet";
 
@@ -45,86 +46,86 @@ type DailyPrayer = {
 
 const dailyPrayers: DailyPrayer[] = [
   {
-    theme: "Can đảm giữa sóng gió",
+    theme: "Vững tin giữa thử thách",
     verse: "“Cứ yên tâm, chính Thầy đây, đừng sợ!”",
     reference: "Tin Mừng theo thánh Mát-thêu 14,27",
     shortReference: "Mt 14,27",
-    meditationTitle: "Chúa đang muốn nói gì với tôi?",
+    meditationTitle: "Tôi có tín thác vào Chúa không?",
     meditation:
-      "Trong những chao đảo gần đây, tôi đang nhìn vào sóng gió hay nhìn vào Chúa? Điều gì làm tôi sợ đến mức quên rằng Chúa đang ở rất gần?",
-    prayerTitle: "Con trao nỗi sợ của con cho Chúa",
+      "Điều gì đang làm tôi lo sợ? Giữa những khó khăn ấy, tôi có nhớ cầu xin Chúa và tin rằng Người luôn ở cùng tôi không?",
+    prayerTitle: "Xin giúp con vững tin",
     prayer:
-      "Lạy Chúa Giêsu, Chúa biết điều đang làm lòng con bất an. Xin đừng để con chỉ nhìn vào sức riêng mình. Xin cho con nhận ra tiếng Chúa giữa gió ngược và can đảm bước về phía Chúa.",
+      "Lạy Chúa Giêsu, Chúa biết những điều đang làm con lo lắng. Xin nâng đỡ đức tin yếu kém của con, để con biết cậy dựa vào Chúa và can đảm chu toàn bổn phận.",
     echo: "“Chính Thầy đây. Đừng sợ.”",
-    actionTitle: "Dừng lại trước nỗi lo",
+    actionTitle: "Cầu nguyện khi lo lắng",
     action:
-      "Hôm nay, mỗi khi lo lắng xuất hiện, tôi sẽ dừng lại một nhịp, hít thở chậm và thầm gọi: “Lạy Chúa Giêsu, con tín thác nơi Ngài.”",
+      "Hôm nay, mỗi khi lo lắng, tôi sẽ dừng lại giây lát và thưa với Chúa: “Lạy Chúa Giêsu, con tín thác vào Chúa.”",
   },
   {
-    theme: "Ở lại trong tình yêu",
+    theme: "Ở lại trong tình yêu Chúa",
     verse: "“Anh em hãy ở lại trong tình thương của Thầy.”",
     reference: "Tin Mừng theo thánh Gio-an 15,9",
     shortReference: "Ga 15,9",
-    meditationTitle: "Tôi đang tìm giá trị của mình ở đâu?",
+    meditationTitle: "Tôi đón nhận tình yêu Chúa thế nào?",
     meditation:
-      "Tôi có đang cố chứng minh mình xứng đáng được yêu bằng thành công, sự hữu ích hay lời công nhận của người khác? Tôi có tin rằng tình yêu của Chúa đi trước mọi cố gắng của tôi không?",
-    prayerTitle: "Xin giữ con ở lại trong tình yêu",
+      "Tôi có nhận ra những ơn Chúa ban trong cuộc sống hằng ngày không? Tôi đã đáp lại tình yêu của Người bằng việc yêu thương những người chung quanh thế nào?",
+    prayerTitle: "Xin giữ con trong tình yêu Chúa",
     prayer:
-      "Lạy Chúa Giêsu, nhiều khi con tìm giá trị của mình nơi những điều chóng qua. Xin cho con thôi chạy trốn khỏi sự hiện diện của Chúa và bình an ở lại trong tình thương nhưng không Người dành cho con.",
+      "Lạy Chúa Giêsu, con cảm tạ Chúa đã yêu thương con. Xin giúp con biết đón nhận tình yêu ấy, trung thành giữ lời Chúa và hết lòng yêu thương anh chị em.",
     echo: "“Hãy ở lại trong tình thương của Thầy.”",
-    actionTitle: "Yêu bằng sự hiện diện",
+    actionTitle: "Lắng nghe với lòng yêu thương",
     action:
-      "Hôm nay, tôi sẽ dành trọn sự chú ý cho một người đang cần được lắng nghe, không vội phán xét và không nhìn vào điện thoại.",
+      "Hôm nay, tôi sẽ dành thời gian lắng nghe một người trong gia đình hoặc cộng đoàn, kiên nhẫn để họ nói hết và không vội xét đoán.",
   },
   {
-    theme: "Trao lại gánh nặng",
+    theme: "Phó thác những lo toan",
     verse:
       "“Tất cả những ai đang vất vả mang gánh nặng nề, hãy đến cùng tôi, tôi sẽ cho nghỉ ngơi bồi dưỡng.”",
     reference: "Tin Mừng theo thánh Mát-thêu 11,28",
     shortReference: "Mt 11,28",
-    meditationTitle: "Gánh nặng nào tôi vẫn ôm chặt?",
+    meditationTitle: "Tôi muốn dâng lên Chúa điều gì?",
     meditation:
-      "Có điều gì tôi đã cố tự giải quyết quá lâu mà chưa một lần thật lòng trao cho Chúa? Tôi có để mình được nghỉ ngơi trong Chúa, hay luôn tin rằng dừng lại là yếu đuối?",
-    prayerTitle: "Con đến với Chúa như con đang là",
+      "Điều gì đang làm tôi mệt mỏi, nặng lòng? Tôi có sẵn lòng dâng những lo toan ấy cho Chúa và khiêm tốn đón nhận sự giúp đỡ của người khác không?",
+    prayerTitle: "Xin Chúa nâng đỡ con",
     prayer:
-      "Lạy Chúa Giêsu, con mang đến đây sự mệt mỏi, những việc chưa xong và cả giới hạn của mình. Xin đỡ lấy điều con không thể gánh một mình và dạy con biết nghỉ ngơi trong Chúa.",
+      "Lạy Chúa Giêsu, con xin dâng lên Chúa những lo toan và vất vả của con. Xin ban sức mạnh để con chu toàn bổn phận, và cho con biết nghỉ ngơi trong tình yêu Chúa.",
     echo: "“Hãy đến cùng Thầy.”",
-    actionTitle: "Trao phó một gánh nặng",
+    actionTitle: "Dâng những lo toan cho Chúa",
     action:
-      "Hôm nay, tôi sẽ viết ra một điều đang đè nặng lòng mình, rồi chậm rãi dâng điều ấy cho Chúa trong một kinh Lạy Cha.",
+      "Hôm nay, tôi sẽ dành ít phút dâng lên Chúa điều đang làm mình nặng lòng, rồi đọc một kinh Lạy Cha với lòng tín thác.",
   },
   {
-    theme: "Đón nhận bình an",
+    theme: "Bình an trong Chúa",
     verse:
       "“Thầy để lại bình an cho anh em, Thầy ban cho anh em bình an của Thầy.”",
     reference: "Tin Mừng theo thánh Gio-an 14,27",
     shortReference: "Ga 14,27",
-    meditationTitle: "Bình an của tôi đang tùy thuộc điều gì?",
+    meditationTitle: "Tôi có biết gìn giữ bình an không?",
     meditation:
-      "Tôi chỉ bình an khi mọi việc diễn ra đúng ý mình, hay vẫn có thể tín thác khi chưa nhìn thấy câu trả lời? Có cuộc xung đột nào đang cần tôi bước vào với sự hiền hòa của Chúa?",
-    prayerTitle: "Xin đặt bình an của Chúa trong con",
+      "Khi gặp điều trái ý, tôi có biết bình tĩnh và cậy trông vào Chúa không? Trong gia đình hay nơi làm việc, tôi cần làm gì để góp phần gìn giữ sự hòa thuận?",
+    prayerTitle: "Xin ban bình an cho con",
     prayer:
-      "Lạy Chúa Giêsu, xin giải thoát con khỏi ảo tưởng phải kiểm soát mọi sự. Xin ban cho con bình an không trốn tránh sự thật, nhưng đủ sâu để con biết lắng nghe, tha thứ và bắt đầu lại.",
+      "Lạy Chúa Giêsu, xin ban bình an cho tâm hồn con. Xin giúp con biết kiên nhẫn, lắng nghe và tha thứ, để con góp phần đem lại sự hòa thuận nơi gia đình và cộng đoàn.",
     echo: "“Thầy ban cho anh em bình an của Thầy.”",
-    actionTitle: "Nói chậm và nghe kỹ",
+    actionTitle: "Kiên nhẫn lắng nghe",
     action:
-      "Trước một cuộc trò chuyện khó hôm nay, tôi sẽ thinh lặng cầu xin bình an, rồi lắng nghe hết lời người kia trước khi trả lời.",
+      "Hôm nay, trước khi trao đổi một chuyện khó nói, tôi sẽ cầu xin Chúa giúp mình bình tĩnh và lắng nghe hết lời người kia.",
   },
   {
-    theme: "Trở nên ánh sáng",
+    theme: "Làm chứng cho Chúa",
     verse: "“Chính anh em là ánh sáng cho trần gian.”",
     reference: "Tin Mừng theo thánh Mát-thêu 5,14",
     shortReference: "Mt 5,14",
-    meditationTitle: "Ánh sáng nào Chúa đã đặt trong tôi?",
+    meditationTitle: "Tôi làm chứng cho Chúa bằng cách nào?",
     meditation:
-      "Tôi có đang che giấu một ân ban vì sợ bị đánh giá hay thất bại? Hôm nay, nơi nào đang cần sự tử tế, lòng can đảm hoặc niềm hy vọng mà Chúa đã trao cho tôi?",
-    prayerTitle: "Xin dùng con như một ánh sáng nhỏ",
+      "Qua lời nói và cách cư xử, tôi có giúp người khác nhận ra lòng nhân hậu của Chúa không? Hôm nay, tôi có thể dùng khả năng Chúa ban để giúp đỡ ai?",
+    prayerTitle: "Xin giúp con làm chứng cho Chúa",
     prayer:
-      "Lạy Chúa Giêsu là Ánh Sáng thật, xin thanh luyện ý hướng của con. Đừng để con tìm cách làm mình nổi bật, nhưng xin cho đời con âm thầm phản chiếu lòng nhân hậu của Chúa.",
+      "Lạy Chúa Giêsu, xin giúp con sống ngay thẳng và bác ái. Xin cho những việc con làm đều vì lòng yêu mến Chúa và anh chị em, chứ không để tìm lời khen cho mình.",
     echo: "“Anh em là ánh sáng.”",
-    actionTitle: "Thắp sáng một ngày của ai đó",
+    actionTitle: "Làm một việc bác ái",
     action:
-      "Hôm nay, tôi sẽ gửi một lời khích lệ chân thành hoặc thực hiện một việc tốt kín đáo cho người đang mỏi mệt.",
+      "Hôm nay, tôi sẽ hỏi thăm, khích lệ hoặc giúp đỡ một người đang gặp khó khăn bằng một việc cụ thể.",
   },
   {
     theme: "Tín thác vào Chúa Cha",
@@ -132,33 +133,33 @@ const dailyPrayers: DailyPrayer[] = [
       "“Hỡi đoàn chiên nhỏ bé, đừng sợ, vì Cha anh em đã vui lòng ban Nước của Người cho anh em.”",
     reference: "Tin Mừng theo thánh Lu-ca 12,32",
     shortReference: "Lc 12,32",
-    meditationTitle: "Tôi hình dung Chúa Cha như thế nào?",
+    meditationTitle: "Tôi có tin vào sự quan phòng của Chúa không?",
     meditation:
-      "Tôi có nhìn Chúa Cha như Đấng chỉ chờ xét lỗi, hay như Người Cha vui lòng trao ban Nước Trời? Nỗi sợ nào đang khiến tôi sống như thể mình phải tự bảo đảm mọi thứ?",
-    prayerTitle: "Con chọn tin vào lòng nhân hậu của Cha",
+      "Tôi có tin Chúa Cha biết rõ những nhu cầu của mình không? Khi chưa biết phải làm gì, tôi có cầu nguyện, tìm sự hướng dẫn và phó thác cho Người không?",
+    prayerTitle: "Xin dạy con biết cậy trông",
     prayer:
-      "Lạy Cha, xin chữa lành trong con những hình ảnh sai lệch về Cha. Khi con thấy mình bé nhỏ và bất lực, xin nhắc con rằng con thuộc về Cha và được gìn giữ trong tình yêu của Cha.",
+      "Lạy Cha, con cảm tạ Cha luôn yêu thương và chăm sóc con. Xin dạy con biết cậy trông vào Cha, hết lòng làm điều phải làm và phó thác những điều ngoài khả năng của con.",
     echo: "“Đừng sợ, hỡi đoàn chiên nhỏ bé.”",
-    actionTitle: "Làm một việc với lòng tín thác",
+    actionTitle: "Chu toàn bổn phận với lòng tín thác",
     action:
-      "Hôm nay, tôi sẽ bắt đầu một việc tốt mình vẫn trì hoãn vì sợ hãi, và phó dâng kết quả trong tay Chúa.",
+      "Hôm nay, tôi sẽ bắt đầu một việc tốt mình còn chần chừ, cầu xin Chúa giúp sức và phó thác kết quả cho Người.",
   },
   {
-    theme: "Phục vụ như Chúa",
+    theme: "Noi gương Chúa phục vụ",
     verse:
       "“Nếu Thầy là Chúa, là Thầy, mà còn rửa chân cho anh em, thì anh em cũng phải rửa chân cho nhau.”",
     reference: "Tin Mừng theo thánh Gio-an 13,14",
     shortReference: "Ga 13,14",
-    meditationTitle: "Tôi đang né tránh việc phục vụ nào?",
+    meditationTitle: "Tôi có sẵn lòng phục vụ không?",
     meditation:
-      "Có người nào tôi thấy khó cúi xuống để phục vụ? Tôi có chỉ giúp khi được ghi nhận, hay có thể yêu bằng những việc nhỏ không ai nhìn thấy?",
-    prayerTitle: "Xin cho con có trái tim của người phục vụ",
+      "Tôi có ngại giúp đỡ những người mình không hợp ý không? Tôi có sẵn lòng làm những việc âm thầm, không được ai biết đến hay cảm ơn không?",
+    prayerTitle: "Xin dạy con khiêm nhường phục vụ",
     prayer:
-      "Lạy Chúa Giêsu hiền lành và khiêm nhường, xin cất khỏi con sự tự mãn và tính toán. Xin dạy con nhận ra Chúa nơi người đang cần một bàn tay, một khoảng thời gian hay một sự cảm thông.",
+      "Lạy Chúa Giêsu hiền lành và khiêm nhường, xin dạy con noi gương Chúa phục vụ anh chị em. Xin giúp con bớt nghĩ đến mình, biết quan tâm và sẵn lòng giúp đỡ người khác.",
     echo: "“Anh em hãy rửa chân cho nhau.”",
-    actionTitle: "Phục vụ trong âm thầm",
+    actionTitle: "Âm thầm phục vụ",
     action:
-      "Hôm nay, tôi sẽ chủ động làm một việc phục vụ nhỏ trong gia đình hoặc cộng đoàn mà không chờ được nhắc và không tìm lời khen.",
+      "Hôm nay, tôi sẽ tự nguyện làm một việc trong gia đình hoặc cộng đoàn, không chờ được nhắc và không tìm lời khen.",
   },
 ];
 
@@ -171,69 +172,69 @@ function buildStages(
       name: "Chuẩn bị",
       latin: "Preparatio",
       duration: stageTimes[0],
-      eyebrow: "Xin ơn Chúa Thánh Thần",
-      title: "Con đặt mình trước mặt Chúa",
-      body: "Lạy Chúa Thánh Thần, xin làm lắng yên những xao động trong con. Xin mở lòng con để con nghe được tiếng Chúa và sẵn sàng đón nhận Lời Người.",
-      prompt: "Hít vào thật chậm. Thở ra thật nhẹ.",
+      eyebrow: "Dọn lòng cầu nguyện",
+      title: "Xin Chúa Thánh Thần hướng dẫn",
+      body: "Lạy Chúa Thánh Thần, xin giúp con lắng lòng, gác lại những lo toan và mở lòng đón nhận Lời Chúa.",
+      prompt: "Thinh lặng giây lát và ý thức Chúa đang hiện diện.",
     },
     {
-      name: "Đọc",
+      name: "Đọc Lời Chúa",
       latin: "Lectio",
       duration: stageTimes[1],
       eyebrow: "Lắng nghe Lời Chúa",
-      title: reading ? "Lắng nghe Tin Mừng" : "Đọc chậm. Đọc lại. Lắng nghe.",
+      title: reading ? "Lắng nghe Tin Mừng" : "Đọc và lắng nghe Lời Chúa",
       body: reading
-        ? "Hãy đọc thật chậm. Đừng cố đọc cho hết; hãy để một lời dừng bạn lại."
-        : "Đừng vội phân tích. Hãy để từng lời ở lại trong lòng và chú ý đến từ ngữ đang chạm đến bạn.",
+        ? "Đọc chậm rãi đoạn Tin Mừng. Có thể đọc lại một câu hoặc một ý để suy niệm."
+        : "Hãy đọc chậm câu Lời Chúa sau đây, rồi thinh lặng giây lát.",
       verse: reading ? undefined : prayer.verse,
       reference: reading
         ? `Tin Mừng • ${reading.gospelReference}`
         : prayer.reference,
-      prompt: "Từ nào đang ở lại trong lòng tôi?",
+      prompt: "Lời nào giúp tôi nhận ra điều Chúa muốn dạy?",
       reading: reading?.gospelText,
     },
     {
       name: "Suy niệm",
       latin: "Meditatio",
       duration: stageTimes[2],
-      eyebrow: "Để Lời Chúa soi chiếu",
-      title: reading ? "Lời nào đang dừng tôi lại?" : prayer.meditationTitle,
+      eyebrow: "Suy niệm Lời Chúa",
+      title: reading ? "Chúa đang nói gì với tôi?" : prayer.meditationTitle,
       body: reading
-        ? "Đoạn Tin Mừng cho tôi nhận ra điều gì về Chúa Giêsu? Lời này chạm đến hoàn cảnh nào trong đời tôi? Chúa đang mời tôi tin, buông bỏ hay thay đổi điều gì?"
+        ? "Qua đoạn Tin Mừng, tôi hiểu thêm điều gì về Chúa? Lời Chúa giúp tôi nhận ra điều gì cần sửa đổi trong cách sống?"
         : prayer.meditation,
-      prompt: "Ở lại với một câu hỏi. Không cần tìm câu trả lời thật nhanh.",
+      prompt: "Xin cho con biết lắng nghe và đáp lại Lời Chúa.",
     },
     {
       name: "Cầu nguyện",
       latin: "Oratio",
       duration: stageTimes[3],
       eyebrow: "Thưa chuyện với Chúa",
-      title: reading ? "Xin cho Lời này sinh hoa trái" : prayer.prayerTitle,
+      title: reading ? "Xin giúp con sống theo Lời Chúa" : prayer.prayerTitle,
       body: reading
-        ? "Lạy Chúa Giêsu, con cảm tạ Chúa vì Lời Chúa vừa nói với con. Xin đón nhận những tâm tình đang có trong con—niềm vui, sự kháng cự, nỗi sợ và ước muốn được đổi mới. Xin giúp con đáp lại Lời bằng cả cuộc đời."
+        ? "Lạy Chúa Giêsu, con cảm tạ Chúa đã dạy dỗ con qua Lời Chúa. Con xin dâng lên Chúa những niềm vui, nỗi lo và điều con đang trăn trở. Xin giúp con vững tin và sống theo ý Chúa."
         : prayer.prayer,
-      prompt: "Hãy thưa với Chúa điều bạn chưa nói được với ai.",
+      prompt: "Hãy thưa với Chúa lời tạ ơn, xin lỗi hoặc cầu xin từ chính lòng mình.",
     },
     {
       name: "Chiêm niệm",
       latin: "Contemplatio",
       duration: stageTimes[4],
       eyebrow: "Thinh lặng bên Chúa",
-      title: "Không cần nói gì thêm",
-      body: "Chỉ ở lại. Để Chúa nhìn bạn và để lòng bạn nghỉ yên trong sự hiện diện của Người.",
+      title: "Thinh lặng trước Chúa",
+      body: "Thinh lặng giây lát, hướng lòng về Chúa và nghỉ ngơi trong tình yêu của Người.",
       verse: reading ? "“Lạy Chúa Giêsu, con ở đây với Chúa.”" : prayer.echo,
-      prompt: "Lạy Chúa Giêsu, con ở đây với Chúa.",
+      prompt: "Xin cho con được ở lại trong tình yêu Chúa.",
     },
     {
-      name: "Hành động",
+      name: "Sống Lời Chúa",
       latin: "Actio",
       duration: stageTimes[5],
-      eyebrow: "Mang Lời vào ngày sống",
-      title: reading ? "Một điều tôi sẽ làm hôm nay" : prayer.actionTitle,
+      eyebrow: "Đem Lời Chúa ra thực hành",
+      title: reading ? "Hôm nay, tôi sẽ sống Lời Chúa thế nào?" : prayer.actionTitle,
       body: reading
-        ? "Từ lời mời gọi vừa nhận được, tôi chọn một hành động nhỏ, cụ thể và có thể thực hiện ngay hôm nay. Tôi sẽ gọi tên hành động ấy trước mặt Chúa và trung thành thực hiện."
+        ? "Chọn một việc cụ thể để thực hành Lời Chúa hôm nay: biết lắng nghe, sẵn lòng tha thứ, giúp đỡ một người hoặc chu toàn bổn phận."
         : prayer.action,
-      prompt: "Xin cho Lời Chúa được tiếp tục trong việc con làm.",
+      prompt: "Xin Chúa giúp con trung thành với điều đã quyết tâm.",
     },
   ];
 }
@@ -262,9 +263,9 @@ function ReadingNotice({ state, retry }: {
     <div className={`reading-notice ${state === "error" ? "is-fallback" : ""}`}>
       <p role="status">
         {state === "loading"
-          ? "Đang tải Tin Mừng. Trong lúc chờ, bạn có thể cầu nguyện với đoạn dự phòng."
+          ? "Đang tải Tin Mừng. Trong lúc chờ, bạn có thể cầu nguyện với câu Lời Chúa thay thế."
           : state === "cached" ? "Đang dùng bản Tin Mừng đã lưu của ngày này."
-          : "Chưa tải được Tin Mừng của ngày này. Bạn đang dùng đoạn cầu nguyện dự phòng."}
+          : "Chưa tải được Tin Mừng của ngày này. Câu Lời Chúa dưới đây được dùng thay thế, không phải bài Tin Mừng theo ngày."}
       </p>
       {state === "error" && <button type="button" onClick={retry}>Thử tải lại Tin Mừng</button>}
     </div>
@@ -737,7 +738,7 @@ export default function Home() {
           onClick={() => setMusicOpen((value) => !value)}
           aria-expanded={musicOpen}
           aria-controls="taize-music"
-          aria-label="Thiết lập cầu nguyện"
+          aria-label="Tùy chỉnh cầu nguyện"
         >
           <span
             className={`sound-waves ${isMusicPlaying ? "is-on" : ""}`}
@@ -747,23 +748,23 @@ export default function Home() {
             <i />
             <i />
           </span>
-          <span>Thiết lập</span>
+          <span>Tùy chỉnh</span>
         </button>
       </header>
 
       <dialog ref={settingsRef} className="preferences-dialog" id="taize-music"
-        aria-label="Thiết lập cầu nguyện" onClose={() => setMusicOpen(false)}
+        aria-label="Tùy chỉnh cầu nguyện" onClose={() => setMusicOpen(false)}
         onClick={event => { if (event.target === event.currentTarget) setMusicOpen(false); }}>
         <div className="preferences-content">
         <div className="music-heading">
           <div>
-            <span>Thiết lập cầu nguyện</span>
-            <strong>Nhạc, cách đọc và hiển thị</strong>
+            <span>Tùy chỉnh cầu nguyện</span>
+            <strong>Nhạc, cách chuyển bước và hiển thị</strong>
           </div>
           <button
             type="button"
             onClick={() => setMusicOpen(false)}
-            aria-label="Đóng thiết lập"
+            aria-label="Đóng tùy chỉnh"
           >
             <span aria-hidden="true">×</span>
           </button>
@@ -777,7 +778,7 @@ export default function Home() {
             aria-label={musicEnabled ? "Tắt nhạc nền" : "Bật nhạc nền"}
           >
             <span className="music-note" aria-hidden="true">
-              {musicEnabled ? "♪" : "—"}
+              <MusicIcon muted={!musicEnabled} />
             </span>
           </button>
           <div className="music-status">
@@ -792,7 +793,7 @@ export default function Home() {
               {status === "idle"
                 ? "Tự phát khi bạn bắt đầu"
                   : status === "quiet" ? "Không hẹn giờ"
-                    : paceMode === "manual" ? `Nhịp ${stageIndex + 1}/6 · Theo nhịp riêng`
+                    : paceMode === "manual" ? `Bước ${stageIndex + 1}/6 · Tôi tự chuyển`
                       : `${formatTime(Math.min(elapsed, totalDuration))} / 12:00`}
             </span>
           </div>
@@ -823,48 +824,48 @@ export default function Home() {
         </div>
       </dialog>
 
-      {!online && <p className="connection-notice" role="status">Bạn đang ngoại tuyến. Trang dùng nội dung đã lưu khi có sẵn.</p>}
+      {!online && <p className="connection-notice" role="status">Hiện không có kết nối mạng. Bạn vẫn có thể dùng những nội dung đã lưu trên thiết bị.</p>}
       <section className="prayer-stage" id="top">
         {status === "idle" ? (
           <div className="intro-panel">
             {savedSession ? (
               <div className="resume-card">
-                <p className="kicker">Giờ cầu nguyện đang dở</p>
-                <h1>Tiếp tục khoảng lặng.</h1>
+                <p className="kicker">Giờ cầu nguyện chưa kết thúc</p>
+                <h1>Tiếp tục giờ cầu nguyện.</h1>
                 <p className="intro-copy">
-                  Phiên ngày {savedSession.dateKey.split("-").reverse().join("/")}
-                  {" · "}Nhịp {getStageIndex(savedSession.elapsed) + 1}/6
-                  {" · "}{savedSession.paceMode === "manual" ? "Theo nhịp riêng" : `Còn ${formatTime(totalDuration - savedSession.elapsed)}`}
+                  Ngày {savedSession.dateKey.split("-").reverse().join("/")}
+                  {" · "}Bước {getStageIndex(savedSession.elapsed) + 1}/6
+                  {" · "}{savedSession.paceMode === "manual" ? "Tôi tự chuyển" : `Còn ${formatTime(totalDuration - savedSession.elapsed)}`}
                 </p>
                 <button className="primary-action" type="button" onClick={restoreSession}>
                   <span className="play-icon" aria-hidden="true" />
-                  Tiếp tục phiên đang dở
+                  Tiếp tục cầu nguyện
                 </button>
                 <button className="new-session-action" type="button" onClick={begin}>
-                  Bắt đầu phiên mới hôm nay
+                  Bắt đầu giờ cầu nguyện mới
                 </button>
                 <p className="quiet-note">Nhạc chỉ phát khi bạn chọn tiếp tục.</p>
               </div>
             ) : (
               <>
                 <p className="kicker">{dateLabel}</p>
-                <h1>Cho tâm hồn một khoảng lặng.</h1>
+                <h1>Cầu nguyện với Lời Chúa.</h1>
                 <p className="intro-copy">
-                  Mười hai phút. Một đoạn Lời Chúa. Một cuộc gặp gỡ thật riêng với Người.
+                  Dành 12 phút để lắng nghe Lời Chúa, suy niệm và thưa chuyện với Người.
                 </p>
                 <div className="intro-actions">
                   <button className="primary-action" type="button" onClick={begin}>
                     <span className="play-icon" aria-hidden="true" />
-                    Bắt đầu 12 phút
+                    Bắt đầu cầu nguyện
                   </button>
-                  <p className="quiet-note">Nhạc Taizé phát cùng giờ cầu nguyện. Bạn có thể điều chỉnh trong Thiết lập.</p>
+                  <p className="quiet-note">Có thể bật, tắt nhạc Taizé hoặc đổi âm lượng trong mục Tùy chỉnh.</p>
                 </div>
               </>
             )}
 
             <PaceSelector value={paceMode} onChange={changePaceMode} />
             <div className="verse-preview">
-              <span>{readingState === "error" ? "Đoạn cầu nguyện dự phòng" : "Tin Mừng hôm nay"}</span>
+              <span>{readingState === "error" ? "Câu Lời Chúa thay thế" : "Tin Mừng hôm nay"}</span>
               {readingState === "loading" ? (
                 <p className="reading-loading" role="status">Đang tải Tin Mừng…</p>
               ) : reading ? (
@@ -885,28 +886,28 @@ export default function Home() {
             </div>
           </div>
         ) : status === "complete" ? (
-          <PrayerCompletion dateKey={dateKey} onQuiet={enterQuiet} onRestart={restart} />
+          <PrayerCompletion onQuiet={enterQuiet} onRestart={restart} />
         ) : status === "quiet" ? (
           <div className="quiet-panel">
-            <p className="kicker">Ở lại trong sự hiện diện của Chúa</p>
-            <h1>Không cần vội.</h1>
+            <p className="kicker">Ở lại với Chúa</p>
+            <h1>Thinh lặng bên Chúa.</h1>
             <p className="body-copy">Lạy Chúa Giêsu, con ở đây với Chúa.</p>
-            <p className="quiet-note">Không hẹn giờ. Khép lại khi bạn sẵn sàng.</p>
-            <button className="secondary-action" type="button" onClick={leaveQuiet}>Khép lại khoảng lặng</button>
+            <p className="quiet-note">Bạn có thể tiếp tục thinh lặng và kết thúc khi muốn.</p>
+            <button className="secondary-action" type="button" onClick={leaveQuiet}>Kết thúc thinh lặng</button>
           </div>
         ) : (
           <div className="session-panel">
             <div className="session-topline">
               <div>
-                <span className="step-count" aria-live="polite">Nhịp {stageIndex + 1} / {stages.length}</span>
+                <span className="step-count" aria-live="polite">Bước {stageIndex + 1} / {stages.length}</span>
                 <strong>{stage.name}</strong>
                 <em>{stage.latin}</em>
               </div>
               <div className="session-time">
-                <time aria-label={paceMode === "auto" ? `${formatTime(remaining)} còn lại` : "Thời gian gợi ý còn lại của nhịp"}>
+                <time aria-label={paceMode === "auto" ? `${formatTime(remaining)} còn lại` : "Thời gian gợi ý còn lại của bước"}>
                   {formatTime(paceMode === "auto" ? remaining : stageProgress >= 0.9999 ? 0 : stage.duration * (1 - stageProgress))}
                 </time>
-                <button type="button" onClick={() => setMusicOpen(true)}>{paceMode === "auto" ? "Tự chuyển" : "Theo nhịp riêng"}</button>
+                <button type="button" onClick={() => setMusicOpen(true)}>{paceMode === "auto" ? "Tự động" : "Tôi tự chuyển"}</button>
               </div>
             </div>
 
@@ -938,11 +939,11 @@ export default function Home() {
               )}
               {stage.prompt && <p className="reflection-prompt">{stage.prompt}</p>}
               {paceMode === "manual" && stageProgress >= 0.9999 && (
-                <p className="pace-note" role="status">Bạn có thể ở lại nhịp này. Chạm Nhịp tiếp khi sẵn sàng.</p>
+                <p className="pace-note" role="status">Bạn có thể tiếp tục cầu nguyện ở bước này. Chọn Bước tiếp khi muốn sang phần kế tiếp.</p>
               )}
               {stageIndex === 2 && (
                 <details className="meditation-details">
-                  <summary><span>{reading ? "Xem lại Tin Mừng" : "Xem lại đoạn dự phòng"} <small>{reading?.gospelReference ?? dailyPrayer.shortReference}</small></span><span className="meditation-chevron" aria-hidden="true" /></summary>
+                  <summary><span>{reading ? "Xem lại Tin Mừng" : "Xem lại câu Lời Chúa"} <small>{reading?.gospelReference ?? dailyPrayer.shortReference}</small></span><span className="meditation-chevron" aria-hidden="true" /></summary>
                   <div className="meditation-text">
                     {(reading?.gospelText ?? dailyPrayer.verse).split(/\n{2,}/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
                   </div>
@@ -965,14 +966,14 @@ export default function Home() {
 
             <div className="session-controls" role="group" aria-label="Điều khiển cầu nguyện">
               <div className="stage-timer" aria-hidden="true"><span style={{ width: `${stageProgress * 100}%` }} /></div>
-              <button className="dock-button" type="button" onClick={previousStage} disabled={stageIndex === 0} aria-label="Nhịp trước" title="Nhịp trước">‹</button>
+              <button className="dock-button" type="button" onClick={previousStage} disabled={stageIndex === 0} aria-label="Bước trước" title="Bước trước">‹</button>
               <button className="dock-button" type="button" onClick={status === "playing" ? pause : resume}
                 aria-label={status === "playing" ? "Tạm dừng" : "Tiếp tục"} title={status === "playing" ? "Tạm dừng" : "Tiếp tục"}>
                 <span className={status === "playing" ? "pause-icon" : "play-icon"} aria-hidden="true" />
               </button>
-              <button className="dock-next" type="button" onClick={skipToNextStage}>{stageIndex >= stages.length - 1 ? "Hoàn tất" : "Nhịp tiếp"}</button>
-              <button className="dock-button" type="button" onClick={toggleMusic} aria-pressed={musicEnabled} aria-label={musicEnabled ? "Tắt nhạc" : "Bật nhạc"} title={musicEnabled ? "Tắt nhạc" : "Bật nhạc"}><span aria-hidden="true">{musicEnabled ? "♪" : "♪̸"}</span></button>
-              <button className="dock-button dock-settings" type="button" onClick={() => setMusicOpen(true)} aria-label="Thiết lập chữ, giao diện và âm lượng" title="Thiết lập">Aa</button>
+              <button className="dock-next" type="button" onClick={skipToNextStage}>{stageIndex >= stages.length - 1 ? "Kết thúc" : "Bước tiếp"}</button>
+              <button className="dock-button" type="button" onClick={toggleMusic} aria-pressed={musicEnabled} aria-label={musicEnabled ? "Tắt nhạc" : "Bật nhạc"} title={musicEnabled ? "Tắt nhạc" : "Bật nhạc"}><MusicIcon muted={!musicEnabled} /></button>
+              <button className="dock-button dock-settings" type="button" onClick={() => setMusicOpen(true)} aria-label="Tùy chỉnh chữ, giao diện và âm lượng" title="Tùy chỉnh">Aa</button>
             </div>
           </div>
         )}

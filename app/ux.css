@@ -24,7 +24,7 @@
   color-scheme: dark;
 }
 
-html { scroll-padding-bottom: 110px; }
+html { scroll-padding-bottom: 180px; scrollbar-gutter: stable; }
 .prayer-shell { display: flex; flex-direction: column; }
 .prayer-stage { flex: 1; }
 :root[data-theme="dark"] .prayer-shell { background: var(--cream); }
@@ -83,6 +83,7 @@ button:disabled { cursor: default; opacity: 0.45; }
 .session-time button { min-height: 44px; padding: 6px 0 6px 12px; border: 0; background: none; color: var(--ink-soft); font-size: 12px; cursor: pointer; }
 .pace-note { margin: 18px 0 0; color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
 .session-panel { padding-bottom: 110px; backdrop-filter: none; }
+.session-panel.is-paused { padding-bottom: 180px; }
 .session-controls {
   position: fixed;
   z-index: 10;
@@ -120,6 +121,45 @@ button:disabled { cursor: default; opacity: 0.45; }
 .dock-settings { font-size: 16px; }
 .dock-button[aria-pressed="false"] { opacity: 0.55; }
 .dock-button .play-icon { margin-left: 3px; }
+.session-paused {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.session-paused button, .reading-close {
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 600 14px/1.5 var(--font-ui);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.session-topline .session-time time { font-size: 25px; line-height: 1.3; letter-spacing: normal; }
+.time-caption { color: var(--ink-soft); font-size: 11px; line-height: 1.5; }
+.prayer-copy.has-meditation { padding-top: 30px; justify-content: flex-start; }
+.prayer-copy.has-meditation h2 { font-size: clamp(31px, 4.2vw, 47px); }
+.meditation-resources { width: 100%; min-width: 0; margin-top: 28px; text-align: left; }
+.meditation-resources h3 { margin: 0; color: var(--ink); font: 650 14px/1.5 var(--font-ui); }
+.resources-hint { margin: 6px 0 14px; color: var(--ink-soft); font: 13px/1.6 var(--font-ui); }
+.meditation-readings { border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
+.meditation-readings .meditation-details { width: 100%; margin: 0; border: 0; border-radius: 0; background: transparent; }
+.meditation-readings .meditation-details + .meditation-details { border-top: 1px solid var(--line); }
+.meditation-details summary > span:first-child { min-width: 0; overflow-wrap: break-word; }
+.meditation-details summary small { margin-top: 3px; }
+.meditation-details[open] summary { color: var(--gold-text); }
+.meditation-details[open] .meditation-text { border-top: 1px solid var(--line); padding-top: 18px; }
+.reading-close { display: block; margin-top: 18px; }
+.has-meditation .reflection-prompt { width: 100%; line-height: 1.7; }
+:root[data-theme="dark"] .meditation-readings .meditation-details { background: transparent; }
 .complete-panel .new-session-action { display: block; margin: 14px auto 0; }
 .after-prayer { max-width: 560px; margin: 30px auto 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--ink-soft); }
 .after-prayer p { margin: 6px 0; font-size: 15px; line-height: 1.7; }

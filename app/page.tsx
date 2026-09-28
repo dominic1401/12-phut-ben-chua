@@ -15,6 +15,7 @@ import { PrayerCompletion } from "./prayer-completion";
 import { OfflineOptions } from "./prayer-offline";
 import { MusicIcon } from "./music-icon";
 import { BrandMark } from "./brand-mark";
+import { MeditationResources } from "./meditation-resources";
 
 type PrayerStatus = "idle" | "playing" | "paused" | "complete" | "quiet";
 
@@ -294,6 +295,8 @@ export default function Home() {
   const [fontSize, setFontSize] = useState<Preferences["fontSize"]>("normal");
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [online, setOnline] = useState(true);
+  const [readingReset, setReadingReset] = useState(0);
+  const [pausedForReading, setPausedForReading] = useState(false);
   const settingsRef = useRef<HTMLDialogElement>(null);
   const stageHeadingRef = useRef<HTMLHeadingElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -481,6 +484,10 @@ export default function Home() {
     const dialog = settingsRef.current;
     if (musicOpen && !dialog?.open) dialog?.showModal();
     if (!musicOpen && dialog?.open) dialog.close();
+    if (!musicOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previousOverflow; };
   }, [musicOpen]);
 
   useEffect(() => {
@@ -552,6 +559,7 @@ export default function Home() {
   };
 
   const begin = () => {
+    setPausedForReading(false);
     clearSession(prayerStorage());
     setSavedSession(null);
     const now = new Date();
@@ -609,7 +617,21 @@ export default function Home() {
     setStatus("paused");
   };
 
+  const pauseForReading = () => {
+    if (status !== "playing") return;
+    setPausedForReading(true);
+    pause();
+  };
+
   const resume = () => {
+    setReadingReset(value => value + 1);
+    setPausedForReading(false);
+    if (pausedForReading && stageIndex === 2) {
+      window.requestAnimationFrame(() => {
+        stageHeadingRef.current?.focus({ preventScroll: true });
+        stageHeadingRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+      });
+    }
     startedAtRef.current = Date.now();
     elapsedAtStartRef.current = elapsed;
     playMusicFrom(elapsed);
@@ -788,7 +810,7 @@ export default function Home() {
                 ? "Nhạc đang tắt"
                 : isMusicPlaying
                   ? "Đang phát cùng giờ cầu nguyện"
-                  : "Sẵn sàng phát"}
+                  : status === "paused" ? "Đang tạm dừng" : "Sẵn sàng phát"}
             </strong>
             <span>
               {status === "idle"
@@ -897,7 +919,7 @@ export default function Home() {
             <button className="secondary-action" type="button" onClick={leaveQuiet}>Kết thúc thinh lặng</button>
           </div>
         ) : (
-          <div className="session-panel">
+          <div className={`session-panel${status === "paused" ? " is-paused" : ""}`}>
             <div className="session-topline">
               <div>
                 <span className="step-count" aria-live="polite">Bước {stageIndex + 1} / {stages.length}</span>
@@ -905,6 +927,7 @@ export default function Home() {
                 <em>{stage.latin}</em>
               </div>
               <div className="session-time">
+                <span className="time-caption">{paceMode === "auto" ? "Còn lại" : "Gợi ý cho bước này"}</span>
                 <time aria-label={paceMode === "auto" ? `${formatTime(remaining)} còn lại` : "Thời gian gợi ý còn lại của bước"}>
                   {formatTime(paceMode === "auto" ? remaining : stageProgress >= 0.9999 ? 0 : stage.duration * (1 - stageProgress))}
                 </time>
@@ -917,7 +940,7 @@ export default function Home() {
             </div>
 
             <article
-              className={`prayer-copy ${stage.reading ? "has-reading" : ""}`}
+              className={`prayer-copy ${stage.reading ? "has-reading" : ""} ${stageIndex === 2 ? "has-meditation" : ""}`}
               key={stage.latin}
             >
               <p className="kicker">{stage.eyebrow}</p>
@@ -938,34 +961,25 @@ export default function Home() {
                   ))}
                 </div>
               )}
+              {stageIndex === 2 && (
+                <MeditationResources key={readingReset}
+                  gospelText={reading?.gospelText ?? dailyPrayer.verse}
+                  gospelReference={reading?.gospelReference ?? dailyPrayer.shortReference}
+                  meditationText={reading?.meditationText}
+                  fallback={!reading} onOpen={pauseForReading}
+                />
+              )}
               {stage.prompt && <p className="reflection-prompt">{stage.prompt}</p>}
               {paceMode === "manual" && stageProgress >= 0.9999 && (
                 <p className="pace-note" role="status">Bạn có thể tiếp tục cầu nguyện ở bước này. Chọn Bước tiếp khi muốn sang phần kế tiếp.</p>
               )}
-              {stageIndex === 2 && (
-                <details className="meditation-details">
-                  <summary><span>{reading ? "Xem lại Tin Mừng" : "Xem lại câu Lời Chúa"} <small>{reading?.gospelReference ?? dailyPrayer.shortReference}</small></span><span className="meditation-chevron" aria-hidden="true" /></summary>
-                  <div className="meditation-text">
-                    {(reading?.gospelText ?? dailyPrayer.verse).split(/\n{2,}/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-                  </div>
-                </details>
-              )}
-              {stageIndex === 2 && reading?.meditationText && (
-                <details className="meditation-details">
-                  <summary>
-                    <span>Đọc bài suy niệm <small>Tùy chọn</small></span>
-                    <span className="meditation-chevron" aria-hidden="true" />
-                  </summary>
-                  <div className="meditation-text">
-                    {reading.meditationText.split(/\n{2,}/).map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
-                  </div>
-                </details>
-              )}
             </article>
 
             <div className="session-controls" role="group" aria-label="Điều khiển cầu nguyện">
+              {status === "paused" && <div className="session-paused">
+                <span role="status">{pausedForReading && stageIndex === 2 ? "Đang tạm dừng để đọc" : "Giờ cầu nguyện đã tạm dừng"}</span>
+                <button type="button" onClick={resume}>Tiếp tục cầu nguyện</button>
+              </div>}
               <div className="stage-timer" aria-hidden="true"><span style={{ width: `${stageProgress * 100}%` }} /></div>
               <button className="dock-button" type="button" onClick={previousStage} disabled={stageIndex === 0} aria-label="Bước trước" title="Bước trước">‹</button>
               <button className="dock-button" type="button" onClick={status === "playing" ? pause : resume}
